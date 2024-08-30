@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Banner from "@/components/Banner";
 import BannerImg from "@/assets/banners/leaf-waterdrops.webp";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebaseConfig/firebase";
+import { db } from "@/firebase-config";
 import ProductForm from "./components/ProductForm";
 import ProductTable from "./components/ProductTable";
+import { Product } from "@/types/product.type";
 
 type FormAction = "CREATE" | "EDIT";
 
@@ -25,6 +26,7 @@ const AdminPanel: React.FC = () => {
     fotos: [],
     opciones: [],
     activo: false,
+    linkTutorial: "",
   };
 
   const getProducts = async () => {
@@ -36,6 +38,8 @@ const AdminPanel: React.FC = () => {
     productsList.sort((a, b) => {
       if (a.categoria < b.categoria) return -1;
       if (a.categoria > b.categoria) return 1;
+      if (a.precio < b.precio) return -1;
+      if (a.precio > b.precio) return 1;
       return 0;
     });
     setProducts(productsList);
@@ -58,12 +62,12 @@ const AdminPanel: React.FC = () => {
   }, []);
 
   return (
-    <section>
+    <div>
       <div className="mt-24">
         <Banner
           title="Panel de gestión"
           imgSrc={BannerImg}
-          description="Aquí podrás agregar, editar y eliminar tus productos."
+          description="Acá podés agregar, editar y eliminar tus productos."
         />
       </div>
 
@@ -89,7 +93,7 @@ const AdminPanel: React.FC = () => {
           action={formAction}
         />
       )}
-    </section>
+    </div>
   );
 };
 

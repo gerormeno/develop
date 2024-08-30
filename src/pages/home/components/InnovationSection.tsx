@@ -3,7 +3,7 @@ const InnovationSection = () => {
     <div className="mb-20">
       <div className="mx-auto mt-20 mb-10 flex max-w-4xl flex-col items-center justify-between bg-white p-6 md:flex-row md:items-start">
         <div className="mb-6 md:mb-0">
-          <h1 className="mb-4 text-4xl font-bold text-black">
+          <h1 className="mb-4 text-4xl text-black text-center">
             Innovación en artefactos para cultivos
           </h1>
         </div>
@@ -13,14 +13,14 @@ const InnovationSection = () => {
             y humidificadores, destacándonos por usar productos argentinos en
             nuestra marca.
           </p>
-          <div className="flex justify-center space-x-10 md:justify-start">
+          <div className="flex justify-center space-x-10">
             <div className="m-5">
-              <p className="text-5xl text-[#4A6F4B]">150+</p>
-              <p className="text-gray-700">Confianza local</p>
+              <p className="text-5xl text-[#4A6F4B]">15+</p>
+              <p className="text-gray-700">Años de experiencia</p>
             </div>
-            <div className="m-5">
-              <p className="text-5xl text-[#4A6F4B]">15</p>
-              <p className="text-gray-700">Calidad argentina garantizada</p>
+            <div className="m-5 pr-8">
+              <p className="text-5xl text-[#4A6F4B]">1200+</p>
+              <p className="text-gray-700">Ventas realizadas</p>
             </div>
           </div>
         </div>

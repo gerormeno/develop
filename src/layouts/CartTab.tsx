@@ -13,10 +13,14 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { theme } from "@/theme";
+import NotAvailableImg from "@/assets/adminPanel/picture-not-available.jpg";
+import { Product } from "@/types/product.type";
 
 interface CartProduct {
   product: Product;
   quantity: number;
+  option?: string;
+  price: number;
 }
 
 interface Cart {
@@ -30,16 +34,17 @@ interface Store {
 
 const CartTab = () => {
   const [totalAmount, setTotalAmount] = useState<number>(0);
+
   const statusTab = useSelector((store: Store) => store.cart.statusTab);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const products: CartProduct[] = useSelector(
-    (store: Store) => store.cart.items
-  );
+  const cart: CartProduct[] = useSelector((store: Store) => store.cart.items);
 
-  const handleRemoveFromCart = (product: Product) => {
-    dispatch(removeFromCart(product));
+  const handleRemoveFromCart = (product: Product, option?: string) => {
+    option
+      ? dispatch(removeFromCart({ product, option }))
+      : dispatch(removeFromCart({ product }));
   };
 
   const handleCloseTabCart = () => {
@@ -49,17 +54,17 @@ const CartTab = () => {
 
   const location = useLocation();
 
-  function calculateTotalPrice(products: any[]): number {
+  function calculateTotalPrice(products: CartProduct[]): number {
     let total = 0;
     products.forEach((product) => {
-      total += product.product.precio * product.quantity;
+      total += product.price * product.quantity;
     });
     return total;
   }
 
   useEffect(() => {
-    setTotalAmount(calculateTotalPrice(products));
-  }, [products]);
+    setTotalAmount(calculateTotalPrice(cart));
+  }, [cart]);
 
   return (
     <Transition show={statusTab}>
@@ -89,17 +94,18 @@ const CartTab = () => {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <DialogPanel className="pointer-events-auto w-screen max-w-md">
+                <DialogPanel className="pointer-events-auto w-screen max-w-sm">
                   <div
                     className={`flex h-full flex-col overflow-y-scroll border-gray-200 backdrop-filter ${
                       theme.blurCartTabEffect
                         ? "bg-white bg-opacity-10 backdrop-blur backdrop-filter"
                         : "bg-cart-background"
-                    }`}>
+                    }`}
+                  >
                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                       <div className="flex items-start justify-between">
-                        <DialogTitle className="text-lg font-medium text-cart-text-secondary">
-                          Shopping cart
+                        <DialogTitle className="text-lg font-medium text-cart-text-primary">
+                          Tu carrito de compras
                         </DialogTitle>
                         <div className="ml-3 flex h-7 items-center">
                           <button
@@ -114,60 +120,83 @@ const CartTab = () => {
                         </div>
                       </div>
 
-                      <div className="mt-8">
+                      <hr className="my-4 border-gray-200" />
+
+                      <div className="mt-6">
                         <div className="flow-root">
                           <ul
                             role="list"
-                            className="-my-6 border-t border-white border-opacity-25"
+                            className="-my-6 divide-y divide-gray-400 divide-opacity-25 border-t border-white border-opacity-25"
                           >
-                            {products.map((product, index) => (
+                            {cart.map((product, index) => (
                               <li
                                 key={index}
                                 className="flex border-t border-white border-opacity-25 py-6"
                               >
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-300">
                                   <img
-                                    src={product.product.fotos[0]}
-                                    alt={product.product.fotos[0]}
+                                    src={
+                                      product.product.fotos &&
+                                      product.product.fotos.length > 0
+                                        ? product.product.fotos[0]
+                                        : NotAvailableImg
+                                    }
+                                    alt={product.product.nombre}
                                     className="h-full w-full object-cover object-center"
                                   />
                                 </div>
 
-                                <div className="ml-4 flex flex-1 flex-col">
+                                <div className="ml-4 flex flex-1 flex-col py-1">
                                   <div>
-                                    <div className="flex justify-between text-base font-medium text-cart-text-primary">
+                                    <div className="flex justify-between">
                                       <h3>
-                                        <a href={`products/${index}`}>
+                                        <a
+                                          href={`products/${index}`}
+                                          className="text-xl font-medium text-cart-text-primary"
+                                        >
                                           {product.product.nombre}
                                         </a>
                                       </h3>
-                                      <p className="ml-4">
-                                        $ {product.product.precio * product.quantity}
-                                      </p>
+                                      <div className="flex">
+                                        <button
+                                          type="button"
+                                          className="font-medium text-cart-text-primary hover:text-cart-text-primary-hover"
+                                          onClick={() =>
+                                            handleRemoveFromCart(
+                                              product.product,
+                                              product.option
+                                            )
+                                          }
+                                        >
+                                          Remove
+                                        </button>
+                                      </div>
                                     </div>
+                                    {product.option && (
+                                      <p className="text-sm text-cart-text-secondary">
+                                        {product.option}
+                                      </p>
+                                    )}
+                                    <p className="text-cart-text-secondary">
+                                      $
+                                      {(
+                                        product.price * product.quantity
+                                      ).toLocaleString("de-DE")}
+                                    </p>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
-                                    <p className="text-cart-text-primary">
+                                    <p className="text-cart-text-secondary">
                                       x{product.quantity}
                                     </p>
-                                    <div className="flex">
-                                      <button
-                                        type="button"
-                                        className="font-medium text-cart-text-primary hover:text-cart-text-primary-hover"
-                                        onClick={() =>
-                                          handleRemoveFromCart(product.product)
-                                        }
-                                      >
-                                        Remove
-                                      </button>
-                                    </div>
                                   </div>
                                 </div>
                               </li>
                             ))}
-                            {products.length === 0 && (
-                              <div className="my-8 flex flex-col items-center justify-center rounded-md
-                              border-opacity-25 px-4 py-6 text-center text-cart-text-primary sm:px-6">
+                            {cart.length === 0 && (
+                              <div
+                                className="my-8 flex flex-col items-center justify-center rounded-md
+                              border-opacity-25 px-4 py-6 text-center text-cart-text-primary sm:px-6"
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   shape-rendering="geometricPrecision"
@@ -176,7 +205,7 @@ const CartTab = () => {
                                   fill-rule="evenodd"
                                   clip-rule="evenodd"
                                   viewBox="0 0 403 512.4"
-                                  className="text-cart-text-primary mx-auto mb-6 h-24 w-24"
+                                  className="mx-auto mb-6 h-24 w-24 text-cart-text-primary"
                                 >
                                   <path
                                     fill="white"
@@ -184,11 +213,10 @@ const CartTab = () => {
                                   />
                                 </svg>
                                 <span className="my-2 block text-sm font-semibold text-cart-text-primary">
-                                  It looks like you haven’t added any products
-                                  to your cart yet.
+                                  Parece que tu carrito está vacío.
                                   <br />
-                                  Start shopping now and treat yourself to some
-                                  beauty magic!
+                                  ¡Navegá por nuestro catálogo <br /> y llevá tu
+                                  cultivo al siguiente nivel!
                                 </span>
                                 <button>
                                   <HashLink
@@ -197,7 +225,7 @@ const CartTab = () => {
                                     className="mt-8 inline-flex items-center rounded-md border border-transparent bg-accent px-4 py-2 
                                   text-sm font-medium text-text-button hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                   >
-                                    Start shopping
+                                    Empezar
                                   </HashLink>
                                 </button>
                               </div>
@@ -207,14 +235,11 @@ const CartTab = () => {
                       </div>
                     </div>
 
-                    <div className="border-t border-white border-opacity-25 px-4 py-6 sm:px-6">
+                    <div className="px-4 py-6 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-cart-text-primary">
-                        <p>Subtotal</p>
-                        <p>$ {totalAmount}</p>
+                        <p>Total</p>
+                        <p>$ {totalAmount.toLocaleString("de-DE")}</p>
                       </div>
-                      <p className="mt-0.5 text-sm text-cart-text-primary">
-                        Shipping and taxes calculated at checkout.
-                      </p>
                       <div className="mt-6">
                         <HashLink
                           smooth
@@ -223,7 +248,7 @@ const CartTab = () => {
                           className="flex items-center justify-center rounded-md border border-transparent bg-accent 
                           px-6 py-3 text-base font-medium text-text-button shadow-sm hover:bg-accent-hover"
                         >
-                          Checkout
+                          Confirmar
                         </HashLink>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-cart-text-primary">
@@ -235,7 +260,7 @@ const CartTab = () => {
                                 className="font-medium text-cart-text-primary hover:text-cart-text-primary-hover"
                                 onClick={() => handleCloseTabCart()}
                               >
-                                Continue Shopping
+                                Empezar
                                 <span aria-hidden="true"> &rarr;</span>
                               </button>
                             </HashLink>
@@ -245,7 +270,7 @@ const CartTab = () => {
                               className="font-medium text-cart-text-primary hover:text-cart-text-primary-hover"
                               onClick={() => handleCloseTabCart()}
                             >
-                              Continue Shopping
+                              Seguir comprando
                               <span aria-hidden="true"> &rarr;</span>
                             </button>
                           )}

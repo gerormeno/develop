@@ -1,13 +1,6 @@
-const stats = [
-  { label: "Transactions every 24 hours", value: "44 million" },
-  { label: "Assets under holding", value: "$119 trillion" },
-  { label: "New users annually", value: "46,000" },
-];
-
 export default function AboutUsSection() {
   return (
-    <div className="bg-white">
-
+    <div className="pt-20 bg-white">
       <main className="isolate">
         {/* Hero section */}
         <div className="relative isolate -z-10">
@@ -53,7 +46,7 @@ export default function AboutUsSection() {
             />
           </div>
           <div className="overflow-hidden">
-            <div className="lg:px-8 lg:pt-32 mx-auto max-w-7xl px-6 pb-32 pt-36 sm:pt-60">
+            <div className="lg:px-8 mx-auto max-w-7xl px-6 pt-20">
               <div className="lg:mx-0 lg:flex lg:max-w-none lg:items-center mx-auto max-w-2xl gap-x-14">
                 <div className="lg:shrink-0 xl:max-w-2xl w-full max-w-xl">
                   <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
@@ -119,81 +112,6 @@ export default function AboutUsSection() {
             </div>
           </div>
         </div>
-
-        {/* Content section */}
-        <div className="lg:px-8 xl:-mt-8 mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 pb-20">
-          <div className="lg:mx-0 lg:max-w-none mx-auto max-w-2xl">
-            <div className="lg:flex-row mt-6 flex flex-col gap-x-8 gap-y-20">
-              <div className="lg:w-full lg:max-w-2xl lg:flex-auto">
-                <p className="text-xl leading-8 text-gray-600">
-                  Nuestra empresa fue fundada con la visión de crear
-                  herramientas de cultivo que maximicen la eficiencia y
-                  productividad. Nos especializamos en el desarrollo y
-                  fabricación de equipos esenciales para el cultivo indoor,
-                  asegurando que cada producto cumpla con los más altos
-                  estándares de calidad y rendimiento.
-                </p>
-                <div className="mt-10 max-w-xl text-base leading-7 text-gray-700">
-                  <p>
-                    Nos esforzamos por ofrecer productos que no solo sean
-                    funcionales, sino también accesibles y fáciles de usar.
-                    Creemos que un buen cultivo comienza con las herramientas
-                    adecuadas, y nos comprometemos a apoyarte en cada paso del
-                    proceso.
-                  </p>
-                  <p className="mt-10">
-                    En Kiev Ingeniería, nos enorgullece ser parte de tu aventura
-                    en el cultivo indoor. Estamos aquí para brindarte el soporte
-                    y asesoramiento que necesitas para alcanzar el éxito en cada
-                    cosecha. Explora nuestras soluciones y lleva tu cultivo al
-                    siguiente nivel.
-                  </p>
-                </div>
-              </div>
-              <div className="lg:flex lg:flex-auto lg:justify-center">
-                <dl className="xl:w-80 w-64 space-y-8">
-                  {stats.map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="flex flex-col-reverse gap-y-4"
-                    >
-                      <dt className="text-base leading-7 text-gray-600">
-                        {stat.label}
-                      </dt>
-                      <dd className="text-5xl font-semibold tracking-tight text-gray-900">
-                        {stat.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Image section */}
-        <section className="lg:px-8 mx-auto">
-      <div className="relative overflow-hidden">
-        <div aria-hidden="true" className="overflow absolute inset-0">
-        <video
-                src="https://videos.pexels.com/video-files/7667132/7667132-uhd_2560_1440_30fps.mp4"
-                className="h-full w-full object-cover object-center"
-                poster="https://videos.pexels.com/video-files/7667132/7667132-uhd_2560_1440_30fps.mp4"
-                autoPlay
-                loop
-                muted
-              />
-        </div>
-        <div className="lg:px-16 relative bg-gray-900 bg-opacity-75 px-6 py-32 sm:px-12 sm:py-40">
-          <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
-           
-            
-          </div>
-        </div>
-      </div>
-    </section>
-
-      
       </main>
     </div>
   );

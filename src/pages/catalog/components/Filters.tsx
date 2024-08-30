@@ -15,31 +15,13 @@ import { invertSort, setFilters, setSort } from "@/store/filters";
 const sortOptions = [{ name: "A - Z" }, { name: "Price" }];
 const filters = [
   {
-    id: "brand",
-    name: "Brand",
+    id: "categoria",
+    name: "Categoria",
     options: [
-      { value: "The Ordinary", label: "The Ordinary", checked: false },
-      { value: "Olay", label: "Olay", checked: false },
-      { value: "Dove", label: "Dove", checked: false },
-      { value: "Cerave", label: "Cerave", checked: false },
-    ],
-  },
-  {
-    id: "category",
-    name: "Category",
-    options: [
-      { value: "Makeup", label: "Makeup", checked: false },
-      { value: "Skincare", label: "Skincare", checked: false },
-      { value: "Soaps", label: "Soaps", checked: false },
-    ],
-  },
-  {
-    id: "skinType",
-    name: "Skin Type",
-    options: [
-      { value: "Oily", label: "Oily", checked: false },
-      { value: "Dry", label: "Dry", checked: false },
-      { value: "All skin types", label: "All skin types", checked: false },
+      { value: "Lámparas", label: "Lámparas", checked: false },
+      { value: "Ventiladores", label: "Ventiladores", checked: false },
+      { value: "Humidificadores", label: "Humidificadores", checked: false },
+      { value: "Poleas", label: "Poleas", checked: false },
     ],
   },
 ];
@@ -110,8 +92,10 @@ export default function Filters() {
     );
   };
 
+  console.log(activeFilters);
+
   return (
-    <div className="bg-footer-background-primary pb-10">
+    <div className="py-5">
       {/* Mobile filter dialog */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-40 sm:hidden" onClose={setOpen}>
@@ -161,7 +145,7 @@ export default function Filters() {
                       {({ open }) => (
                         <>
                           <h3 className="-mx-2 -my-3 flow-root">
-                            <Disclosure.Button className="bg-whi flex w-full items-center justify-between px-2 py-3 text-sm text-gray-400">
+                            <Disclosure.Button className="bg-white flex w-full items-center justify-between px-2 py-3 text-sm text-gray-400">
                               <span className="font-medium text-gray-900">
                                 {section.name}
                               </span>
@@ -214,28 +198,18 @@ export default function Filters() {
           </div>
         </Dialog>
       </Transition.Root>
-      <div className="lg:px-8 mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tight text-filters-text-primary">
-          Workspace sale
-        </h1>
-        <p className="mt-4 max-w-xl text-sm text-filters-text-primary">
-          Our thoughtfully designed workspace objects are crafted in limited
-          runs. Improve your productivity and organization with these sale items
-          before we run out.
-        </p>
-      </div>
       {/* Filters */}
       <section aria-labelledby="filter-heading">
         <h2 id="filter-heading" className="sr-only">
-          Filters
+          Filtros
         </h2>
 
-        <div className="border-b border-black bg-filters-background-primary pb-4">
+        <div className="border-b border-gray-600 pb-4">
           <div className="lg:px-8 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="group inline-flex justify-center text-sm font-medium text-filters-text-primary hover:text-filters-text-primary-hover">
-                  Sort
+                  Orden
                   <ChevronDownIcon
                     className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-filters-text-primary group-hover:text-filters-text-primary-hover"
                     aria-hidden="true"
@@ -288,7 +262,7 @@ export default function Filters() {
               className="inline-block text-sm font-medium text-white hover:text-gray-900 sm:hidden"
               onClick={() => setOpen(true)}
             >
-              Filters
+              Filtros
             </button>
 
             <div className="hidden sm:block">
@@ -362,10 +336,11 @@ export default function Filters() {
         </div>
 
         {/* Active filters */}
-        <div className="bg-filters-accent">
+        { activeFilters.length > 0 &&
+          <div className="">
           <div className="lg:px-8 mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6">
             <h3 className="text-sm font-medium text-filters-text-primary">
-              Filters
+              Filtros
               <span className="sr-only">, active</span>
             </h3>
 
@@ -379,7 +354,7 @@ export default function Filters() {
                 {activeFilters.map((activeFilter: string) => (
                   <span
                     key={activeFilter}
-                    className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-black bg-opacity-40 py-1.5 pl-3 pr-2 text-sm font-medium text-gray-300 backdrop-blur-md backdrop-filter"
+                    className="m-1 inline-flex items-center rounded-full border border-gray-200 py-1.5 pl-3 pr-2 text-sm font-medium text-gray-300 backdrop-filter"
                   >
                     <span>{activeFilter}</span>
                     <button
@@ -408,7 +383,7 @@ export default function Filters() {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </section>
     </div>
   );

@@ -3,13 +3,13 @@ export const TripleImageContainer = () => {
     <div>
       <div className="mt-12 flex items-center justify-center">
         <h1 className="text-center text-4xl text-text-primary sm:text-5xl">
-          Nuestros Productos
+          Nuestros productos
         </h1>
       </div>
       <div className="mx-10 mb-5 mt-4 flex items-center justify-center">
         <p className="mb-5 mt-3 text-center font-thin">
-          Descubre nuestra selección de artefactos para cultivos de interior
-          hechos en Argentina.
+          Descubrí nuestra selección de artefactos para cultivos de interior
+          hechos 100% en Argentina.
         </p>
       </div>
       <div className="mx-auto flex max-w-6xl flex-col md:flex-row">

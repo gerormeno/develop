@@ -1,16 +1,12 @@
 import Logo from "@/assets/KievLogo.png";
-import { SVGProps, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { SVGProps } from "react";
 import { HashLink } from "react-router-hash-link";
-import emailjs from "@emailjs/browser";
-import { toast } from "react-toastify";
 
 const footerNavigation = {
   sections: [
-    { name: "Products", href: "/products#top" },
-    { name: "About us", href: "/about#top" },
-    { name: "Certifications", href: "/about#certifications" },
-    { name: "Contact", href: "/about#contact" },
+    { name: "Productos", href: "/products#top" },
+    { name: "Nosotros", href: "/about#top" },
+    { name: "Contacto", href: "/contact#top" },
   ],
   social: [
     {
@@ -28,7 +24,7 @@ const footerNavigation = {
     },
     {
       name: "Instagram",
-      href: "#",
+      href: "https://www.instagram.com/kievingenieria?igsh=ZWNrYjg1OW85dzl6",
       icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
         <svg fill="white" viewBox="0 0 24 24" {...props}>
           <path
@@ -89,32 +85,6 @@ const footerNavigation = {
 };
 
 const Footer = () => {
-  const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
-  const form = useRef<HTMLFormElement>(null);
-
-  const sendEmail = () => {
-    setIsLoading(true);
-    if (form.current) {
-      emailjs
-        .sendForm(
-          "service_65ahc09",
-          "template_uytmzki",
-          form.current,
-          "9TpLtLJ_GQin1KkmZ"
-        )
-        .then(() => {
-          setIsLoading(false);
-          form.current?.reset();
-          toast.success("Email sent successfully");
-        })
-        .catch(() => {
-          setIsLoading(false);
-          toast.error("Failed to send email");
-        });
-    }
-  };
-
   return (
     <footer
       className="bg-footer-background-primary"
@@ -126,12 +96,12 @@ const Footer = () => {
       <div className="lg:px-8 lg:py-16 mx-auto max-w-md px-6 py-12 sm:max-w-7xl">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="flex flex-col justify-between sm:flex-row">
-            <div className="xl:col-span-1 space-y-8">
-              <img className="h-24" src={Logo} alt="Natural Beauty Logo" />
-              <p className="text-footer-text-primary">
-                Revitalize your skin with the best of nature
+            <div className="xl:col-span-1 space-y-8 sm:text-center sm:items-center">
+              <img className="h-24 mx-auto sm:mx-0" src={Logo} alt="Kiev Logo" />
+              <p className="text-footer-text-primary text-center sm:text-left">
+                Los mejores productos para tu cultivo
               </p>
-              <div className="flex space-x-6">
+              <div className="flex space-x-6 justify-center sm:justify-start">
                 {footerNavigation.social.map((item) => (
                   <HashLink
                     key={item.name}
@@ -144,9 +114,9 @@ const Footer = () => {
                 ))}
               </div>
             </div>
-            <div className="xl:col-span-2 xl:mt-0 gap-8 border-t border-slate-200 mt-4 text-left sm:border-transparent sm:pt-0 sm:text-right">
+            <div className="xl:col-span-2 xl:mt-0 mt-4 gap-8 border-t border-slate-200 pt-12 text-center sm:border-transparent sm:pt-0 sm:text-right">
               <h3 className="text-lg font-medium text-footer-text-primary">
-                <strong>Explore more</strong>
+                <strong>Explorar</strong>
               </h3>
               <ul role="list" className="mt-4 space-y-4">
                 {footerNavigation.sections.map((item) => (
@@ -154,7 +124,8 @@ const Footer = () => {
                     <HashLink
                       smooth
                       to={item.href}
-                      className="text-footer-text-secondary hover:text-footer-text-secondary-hover">
+                      className="text-footer-text-secondary hover:text-footer-text-secondary-hover"
+                    >
                       {item.name}
                     </HashLink>
                   </li>
@@ -162,61 +133,10 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          {location.pathname !== "/about" && (
-            <div className="xl:mt-0 mt-16 border-t border-slate-200 pt-10 sm:border-transparent sm:pt-0">
-              <p className="text-sm font-medium text-footer-text-primary">
-                Sign up for our newsletter
-              </p>
-
-              <p className="mt-6 text-sm text-footer-text-secondary">
-                The latest deals and savings, sent to your inbox weekly.
-              </p>
-              <form
-                className="mt-2 flex sm:max-w-md"
-                ref={form}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  sendEmail();
-                }}
-              >
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="text"
-                  name="email"
-                  autoComplete="email"
-                  required
-                  placeholder="Enter your email"
-                  className="w-full min-w-0 appearance-none rounded-md border border-white bg-footer-background-secondary px-4 py-2 
-                  text-base text-gray-900 placeholder-footer-text-tertiary shadow-sm focus:border-white focus:outline-none 
-                  focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
-                />
-                <div className="ml-4 flex-shrink-0">
-                  <button
-                    type="submit"
-                    className={`flex w-full items-center justify-center rounded-md border border-transparent bg-[#4A6F4B] px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-[#3B5740] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 ${
-                      isLoading
-                        ? "scale-90 cursor-not-allowed bg-gray-400"
-                        : "bg-[#4A6F4B] hover:bg-[#3B5740] focus:ring-indigo-500 ffocus:ring-white"
-                    }`}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-blue-600" />
-                    ) : (
-                      "Sign up"
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
         </div>
         <div className="mt-12 border-t border-slate-200 pt-8">
-          <p className="xl:text-center text-base text-slate-400">
-            &copy; {new Date().getFullYear()} KIEV Ingeniería 
+          <p className="text-center text-base text-slate-400">
+            &copy; {new Date().getFullYear()} KIEV Ingeniería
           </p>
         </div>
       </div>

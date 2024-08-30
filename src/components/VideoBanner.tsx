@@ -8,6 +8,8 @@ type Props = {
   textButton?: string;
   redirection?: string;
   videoSrc: string;
+  logoSrc?: string;
+  skeletonSrc?: string;
 };
 
 const Banner = ({
@@ -17,6 +19,8 @@ const Banner = ({
   textButton,
   redirection,
   videoSrc,
+  logoSrc,
+  skeletonSrc,
 }: Props) => {
   return (
     <section className="lg:px-8 mx-auto">
@@ -28,10 +32,20 @@ const Banner = ({
             autoPlay
             loop
             muted
+            playsInline
+            preload="auto"
+            poster={skeletonSrc}
           />
         </div>
-        <div className="lg:px-16 relative flex h-screen w-full items-center justify-center bg-gray-900 bg-opacity-75 px-6 py-32 sm:px-12 sm:py-40">
-          <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
+        <div className="lg:px-16 relative flex h-screen w-full justify-center bg-gray-900 bg-opacity-40 px-6 sm:px-12">
+          <div className="relative mx-auto mt-40 flex max-w-3xl flex-col items-center text-center">
+            {logoSrc && (
+              <img
+                className="mx-auto mb-10 h-16 w-auto invert filter mt-10"
+                src={logoSrc}
+                alt="KIEV Ingeniería"
+              />
+            )}
             {topDescription && (
               <p className="mb-2 mt-3 font-thin text-white">{topDescription}</p>
             )}

@@ -1,34 +1,22 @@
-import {
-  Label,
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-} from "@headlessui/react";
+import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions, } from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ProductFeaturesList from "@/pages/productManager/components/ProductFeaturesList";
 import { useState } from "react";
-
-const INITIAL_FORM_STATE: Product = {
-  nombre: "",
-  precio: 0,
-  categoria: "",
-  descripcion: "",
-  descripcionLarga: "",
-  caracteristicas: [],
-  fotos: [],
-  opciones: [],
-  activo: false,
-};
+import OptionsTable from "./OptionsTable";
+import { Product } from "@/types/product.type";
+import { deleteObject, getDownloadURL, ref, uploadBytes, } from "firebase/storage";
+import { storage } from "@/firebase-config";
+import CustomModal from "@/components/CustomModal";
+import Switch from "@/components/Switch";
+import YoutubeThumbnail from "./YoutubeThumbnail";
 
 type ProductFormProps = {
   initialFormState: Product;
   action: "CREATE" | "EDIT";
-}
+};
 
-const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => {
- 
+const ProductForm: React.FC<ProductFormProps> = ({ initialFormState, action }) => {
   const categories = [
     {
       id: 1,
@@ -40,41 +28,103 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
     },
     {
       id: 3,
+      name: "Poleas",
+    },
+    {
+      id: 4,
+      name: "Ventiladores",
+    },
+    {
+      id: 5,
       name: "Otros",
-    }
+    },
   ];
 
   const [selected, setSelected] = useState(categories[0]);
   const [formState, setFormState] = useState<Product>(initialFormState);
+  const [openModalCancel, setOpenModalCancel] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
-  const handleChange = (value:any, inputName:string) => {
+  const handleChange = (value: any, inputName: string) => {
     setFormState({
       ...formState,
       [inputName]: value,
     });
-  }
+  };
+  
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsActive(event.target.checked);
+  };
+
+  const handleChangeListBoxValue = (value: any) => {
+    setSelected(value);
+    handleChange(value, "categoria");
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const storageRef = ref(storage, `uploadedProducts/${file.name}`);
+
+      uploadBytes(storageRef, file)
+        .then(() => {
+          // Obtener la URL de descarga de la imagen
+          getDownloadURL(storageRef)
+            .then((url) => {
+              setFormState({
+                ...formState,
+                fotos: [...formState.fotos, url],
+              });
+            })
+            .catch((error) => {
+              console.error("Error al obtener la URL de descarga:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error al subir la imagen:", error);
+        });
+    }
+  };
+
+  const deleteImage = async (imageUrl: string) => {
+    try {
+      const storageRef = ref(storage, imageUrl);
+
+      await deleteObject(storageRef);
+
+      setFormState({
+        ...formState,
+        fotos: formState.fotos.filter((url) => url !== imageUrl),
+      });
+
+      console.log("Image deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
 
   return (
-    <div className="mx-auto max-w-4xl pb-8">
-      <form>
+    <>
+      <div className="mx-auto max-w-4xl pb-8">
         <div className="space-y-12">
-          {/* Product form */}
           <div className="">
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
               <div className="col-span-full">
-                <h1 className="mb-4 mt-8 pl-4 text-3xl font-bold text-black">
-                {`${action === "CREATE" ? "Crear" : "Modificar"} Personaje`}
+                <h1 className="mb-4 mt-8 pl-1 text-3xl font-bold text-black">
+                  {`${action === "CREATE" ? "Crear" : "Modificar"} Producto`}
                 </h1>
-                <p className="mt-1 pl-4 text-sm leading-6 text-gray-600">
+                <p className="mt-1 pl-1 text-sm leading-6 text-gray-600">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit
                   minima? Quibusdam aut minima cumque earum voluptate.
                 </p>
               </div>
 
-              <div className="col-span-2">
+              
+              <div className="col-span-3">
                 <label
                   htmlFor="product-name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
+                  className="block text-md font-medium leading-6 text-gray-900"
                 >
                   Nombre
                 </label>
@@ -83,7 +133,7 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
                     id="product-name"
                     name="product-name"
                     type="text"
-                    value={initialFormState.nombre}
+                    value={formState.nombre}
                     onChange={(e) => handleChange(e.target.value, "nombre")}
                     autoComplete="street-address"
                     className="w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -93,9 +143,12 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
 
               <div className="sm:col-span-3">
                 <div className="flex space-x-4">
-                  <Listbox value={selected} onChange={setSelected}>
+                  
+                  <Listbox
+                    value={selected}
+                    onChange={(value) => handleChangeListBoxValue(value)}>
                     <div className="relative w-64">
-                      <Label className="mb-2 block text-sm font-medium leading-6 text-gray-900">
+                      <Label className="mb-2 block text-md font-medium leading-6 text-gray-900">
                         Categoría
                       </Label>
                       <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
@@ -140,8 +193,7 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
                   <div className="flex-1">
                     <label
                       htmlFor="product-price"
-                      className="mb-2 block text-sm font-medium leading-6 text-gray-900"
-                    >
+                      className="mb-2 block text-md font-medium leading-6 text-gray-900">
                       Precio
                     </label>
                     <div className="relative rounded-md shadow-sm">
@@ -153,17 +205,34 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
                         name="product-price"
                         type="text"
                         placeholder="0.00"
-                        className="mt-2 block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        value={formState.precio.toLocaleString("es-ES")}
+                        onChange={(e) => handleChange(e.target.value, "precio")}
+                        className="mt-2 block w-full rounded-md border-0 py-1.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
                     </div>
                   </div>
+
+                  <div className="form-group">
+                    <label
+                      htmlFor="product-stock"
+                      className="mb-2 block text-md font-medium leading-6 text-gray-900"
+                    >
+                      Activo
+                    </label>
+                    <Switch
+                      id="active"
+                      checked={isActive}
+                      onChange={handleSwitchChange}
+                    />
+                  </div>
+
                 </div>
               </div>
 
               <div className="col-span-full">
                 <label
                   htmlFor="product-description"
-                  className="block text-sm font-medium leading-6 text-gray-900"
+                  className="block text-md font-medium leading-6 text-gray-900"
                 >
                   Descripción
                 </label>
@@ -173,30 +242,45 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
                     name="product-description"
                     rows={3}
                     className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={""}
+                    value={formState.descripcion}
+                    onChange={(e) =>
+                      handleChange(e.target.value, "descripcion")
+                    }
                     placeholder="Escribí una breve descripción del producto."
                   />
                 </div>
               </div>
 
+
               <div className="col-span-full">
-                <ProductFeaturesList></ProductFeaturesList>
+                <ProductFeaturesList
+                  value={formState.caracteristicas}
+                  onChange={(value) => handleChange(value, "caracteristicas")}
+                />
               </div>
 
               <div className="col-span-full">
+                <OptionsTable
+                  options={formState.opciones}
+                  editOption={() => {}}
+                  createOption={() => {}}
+                />
+              </div>
+
+              {/* Imagenes */}
+              <div className="col-span-full">
                 <label
                   htmlFor="product-images"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
+                  className="block text-md font-medium leading-6 text-gray-900">
                   Imágenes
                 </label>
-                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                  <div className="text-center">
+                <div className="flex flex-col items-center">
+                  <div className="flex w-full flex-col items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                     <PhotoIcon
                       aria-hidden="true"
-                      className="mx-auto h-12 w-12 text-gray-300"
+                      className="h-12 w-12 text-gray-300"
                     />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                    <div className="mt-4 flex flex-col items-center text-sm leading-6 text-gray-600">
                       <label
                         htmlFor="file-upload"
                         className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -207,24 +291,51 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
                           name="file-upload"
                           type="file"
                           className="sr-only"
+                          onChange={(e) => handleFileChange(e)}
                         />
                       </label>
-                      <p className="pl-1">o arrastrá y soltá</p>
+                      <p className="mt-1">o arrastrá y soltá</p>
                     </div>
-                    <p className="text-xs leading-5 text-gray-600">
+                    <p className="mt-2 text-xs leading-5 text-gray-600">
                       PNG, JPG, GIF hasta 10MB
                     </p>
                   </div>
+                  {formState.fotos && formState.fotos.length > 0 && (
+                    <div className="mt-0 flex w-full flex-col items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                      <div className="lg:grid-cols-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {formState.fotos.map((image, index) => (
+                          <div
+                            key={index}
+                            className="relative h-48 w-48 transform overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+                          >
+                            <img
+                              src={image}
+                              alt={`Image ${index + 1}`}
+                              className="h-full w-full object-cover"
+                            />
+                            <button
+                              onClick={() => deleteImage(image)}
+                              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 transition-opacity duration-300 hover:opacity-100"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+              <YoutubeThumbnail />
             </div>
           </div>
 
           {/* Buttons */}
-          <div className=" mt-6 flex items-center justify-end gap-x-6 border-b border-gray-900/10 pb-12">
+          <div className=" mt-6 flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-8 pb-4">
             <button
               type="button"
               className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={() => setOpenModalCancel(true)}
             >
               Cancelar
             </button>
@@ -236,284 +347,17 @@ const ProductForm: React.FC<ProductFormProps> = ({initialFormState, action}) => 
             </button>
           </div>
 
-          {/* Notifications */}
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Notifications
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              We'll always let you know about important changes, but you pick
-              what else you want to hear about.
-            </p>
-
-            <div className="mt-10 space-y-10">
-              <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">
-                  By Email
-                </legend>
-                <div className="mt-6 space-y-6">
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="comments"
-                        name="comments"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label
-                        htmlFor="comments"
-                        className="font-medium text-gray-900"
-                      >
-                        Comments
-                      </label>
-                      <p className="text-gray-500">
-                        Get notified when someones posts a comment on a posting.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="candidates"
-                        name="candidates"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label
-                        htmlFor="candidates"
-                        className="font-medium text-gray-900"
-                      >
-                        Candidates
-                      </label>
-                      <p className="text-gray-500">
-                        Get notified when a candidate applies for a job.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="relative flex gap-x-3">
-                    <div className="flex h-6 items-center">
-                      <input
-                        id="offers"
-                        name="offers"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                    </div>
-                    <div className="text-sm leading-6">
-                      <label
-                        htmlFor="offers"
-                        className="font-medium text-gray-900"
-                      >
-                        Offers
-                      </label>
-                      <p className="text-gray-500">
-                        Get notified when a candidate accepts or rejects an
-                        offer.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </fieldset>
-              <fieldset>
-                <legend className="text-sm font-semibold leading-6 text-gray-900">
-                  Push Notifications
-                </legend>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  These are delivered via SMS to your mobile phone.
-                </p>
-                <div className="mt-6 space-y-6">
-                  <div className="flex items-center gap-x-3">
-                    <input
-                      id="push-everything"
-                      name="push-notifications"
-                      type="radio"
-                      className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                    />
-                    <label
-                      htmlFor="push-everything"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Everything
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-x-3">
-                    <input
-                      id="push-email"
-                      name="push-notifications"
-                      type="radio"
-                      className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                    />
-                    <label
-                      htmlFor="push-email"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Same as email
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-x-3">
-                    <input
-                      id="push-nothing"
-                      name="push-notifications"
-                      type="radio"
-                      className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                    />
-                    <label
-                      htmlFor="push-nothing"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      No push notifications
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-
-          {/* Personal Information */}
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Personal Information
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit minima?
-              Quibusdam aut minima cumque earum voluptate.
-            </p>
-
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-3">
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  First name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="first-name"
-                    name="first-name"
-                    type="text"
-                    autoComplete="given-name"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Last name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="last-name"
-                    name="last-name"
-                    type="text"
-                    autoComplete="family-name"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-4">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-full">
-                <label
-                  htmlFor="street-address"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Street address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="street-address"
-                    name="street-address"
-                    type="text"
-                    autoComplete="street-address"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 sm:col-start-1">
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  City
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="city"
-                    name="city"
-                    type="text"
-                    autoComplete="address-level2"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="region"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  State / Province
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="region"
-                    name="region"
-                    type="text"
-                    autoComplete="address-level1"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="postal-code"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  ZIP / Postal code
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="postal-code"
-                    name="postal-code"
-                    type="text"
-                    autoComplete="postal-code"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </form>
-    </div>
+      </div>
+      <CustomModal
+        open={openModalCancel}
+        setOpen={setOpenModalCancel}
+        title="Cancelar"
+        message={`¿Estás seguro que deseas cancelar la ${action === "CREATE" ? "creación" : "edición"} de este producto?`}
+        confirmText="Sí, cancelar"
+        cancelText="No, continuar"
+      />
+    </>
   );
 };
 

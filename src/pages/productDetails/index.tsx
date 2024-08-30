@@ -1,179 +1,14 @@
 import { useParams } from "react-router-dom";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "@/firebaseConfig/firebase";
-import { Fragment } from "react";
-import {
-  Dialog,
-  Popover,
-  RadioGroup,
-  Tab,
-  Transition,
-} from "@headlessui/react";
-import {
-  Bars3Icon,
-  MagnifyingGlassIcon,
-  ShieldCheckIcon,
-  ShoppingBagIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import {
-  CheckIcon,
-  QuestionMarkCircleIcon,
-  StarIcon,
-} from "@heroicons/react/20/solid";
+import { db } from "@/firebase-config";
+import { useAuth } from "@/security/AuthContext";
+import GenericProductImage from "@/assets/adminPanel/picture-not-available.jpg";
+import { RadioGroup } from "@headlessui/react";
+import { QuestionMarkCircleIcon, StarIcon } from "@heroicons/react/20/solid";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/cart";
-
-const navigation = {
-  categories: [
-    {
-      id: "women",
-      name: "Women",
-      featured: [
-        {
-          name: "New Arrivals",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg",
-          imageAlt:
-            "Models sitting back to back, wearing Basic Tee in black and bone.",
-        },
-        {
-          name: "Basic Tees",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/mega-menu-category-02.jpg",
-          imageAlt:
-            "Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees.",
-        },
-      ],
-      sections: [
-        {
-          id: "clothing",
-          name: "Clothing",
-          items: [
-            { name: "Tops", href: "#" },
-            { name: "Dresses", href: "#" },
-            { name: "Pants", href: "#" },
-            { name: "Denim", href: "#" },
-            { name: "Sweaters", href: "#" },
-            { name: "T-Shirts", href: "#" },
-            { name: "Jackets", href: "#" },
-            { name: "Activewear", href: "#" },
-            { name: "Browse All", href: "#" },
-          ],
-        },
-        {
-          id: "accessories",
-          name: "Accessories",
-          items: [
-            { name: "Watches", href: "#" },
-            { name: "Wallets", href: "#" },
-            { name: "Bags", href: "#" },
-            { name: "Sunglasses", href: "#" },
-            { name: "Hats", href: "#" },
-            { name: "Belts", href: "#" },
-          ],
-        },
-        {
-          id: "brands",
-          name: "Brands",
-          items: [
-            { name: "Full Nelson", href: "#" },
-            { name: "My Way", href: "#" },
-            { name: "Re-Arranged", href: "#" },
-            { name: "Counterfeit", href: "#" },
-            { name: "Significant Other", href: "#" },
-          ],
-        },
-      ],
-    },
-    {
-      id: "men",
-      name: "Men",
-      featured: [
-        {
-          name: "New Arrivals",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg",
-          imageAlt:
-            "Drawstring top with elastic loop closure and textured interior padding.",
-        },
-        {
-          name: "Artwork Tees",
-          href: "#",
-          imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-06.jpg",
-          imageAlt:
-            "Three shirts in gray, white, and blue arranged on table with same line drawing of hands and shapes overlapping on front of shirt.",
-        },
-      ],
-      sections: [
-        {
-          id: "clothing",
-          name: "Clothing",
-          items: [
-            { name: "Tops", href: "#" },
-            { name: "Pants", href: "#" },
-            { name: "Sweaters", href: "#" },
-            { name: "T-Shirts", href: "#" },
-            { name: "Jackets", href: "#" },
-            { name: "Activewear", href: "#" },
-            { name: "Browse All", href: "#" },
-          ],
-        },
-        {
-          id: "accessories",
-          name: "Accessories",
-          items: [
-            { name: "Watches", href: "#" },
-            { name: "Wallets", href: "#" },
-            { name: "Bags", href: "#" },
-            { name: "Sunglasses", href: "#" },
-            { name: "Hats", href: "#" },
-            { name: "Belts", href: "#" },
-          ],
-        },
-        {
-          id: "brands",
-          name: "Brands",
-          items: [
-            { name: "Re-Arranged", href: "#" },
-            { name: "Counterfeit", href: "#" },
-            { name: "Full Nelson", href: "#" },
-            { name: "My Way", href: "#" },
-          ],
-        },
-      ],
-    },
-  ],
-  pages: [
-    { name: "Company", href: "#" },
-    { name: "Stores", href: "#" },
-  ],
-};
-
-const product = {
-  name: "Everyday Ruck Snack",
-  href: "#",
-  price: "$220",
-  description:
-    "Don't compromise on snack-carrying capacity with this lightweight and spacious bag. The drawstring top keeps all your favorite chips, crisps, fries, biscuits, crackers, and cookies secure.",
-  imageSrc:
-    "https://tailwindui.com/img/ecommerce-images/product-page-04-featured-product-shot.jpg",
-  imageAlt:
-    "Light green canvas bag with black straps, handle, front zipper pouch, and drawstring top.",
-  breadcrumbs: [
-    { id: 1, name: "Travel", href: "#" },
-    { id: 2, name: "Bags", href: "#" },
-  ],
-  sizes: [
-    { name: "18L", description: "Perfect for a reasonable amount of snacks." },
-    { name: "20L", description: "Enough room for a serious amount of snacks." },
-  ],
-};
+import { Product } from "@/types/product.type";
 
 const reviews = {
   average: 4,
@@ -203,72 +38,111 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+type Option = {
+  nombre: string;
+  descripcion: string;
+  precio: number;
+};
+
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [producto, setProducto] = useState<any>();
+  const [producto, setProducto] = useState<Product>();
   const productsCollection = collection(db, "products");
+  const { isUserLoggedIn } = useAuth();
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   const dispatch = useDispatch();
 
   const handleAddToCart = (product: Product) => {
-    dispatch(addToCart(product));
+    selectedOption && producto && producto.opciones
+      ? dispatch(
+          addToCart({
+            product: product,
+            option: selectedOption.nombre,
+            price: selectedOption.precio,
+          })
+        )
+      : dispatch(addToCart({ product: product, price: product.precio }));
   };
 
-  const getProducts = async (productName: string) => {
+  const getProduct = async (productName: string) => {
     const q = query(productsCollection, where("nombre", "==", productName));
     const productsSnapshot = await getDocs(q);
     const productsList = productsSnapshot.docs.map((doc) => doc.data());
-    setProducto(productsList[0]);
+    productsList[0] && setProducto(productsList[0] as Product);
+  };
+
+  const pictures =
+    producto && producto.fotos.length > 0
+      ? producto.fotos
+      : [GenericProductImage];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % pictures.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex - 1 + pictures.length) % pictures.length
+    );
   };
 
   useEffect(() => {
     if (id) {
-      getProducts(id);
+      getProduct(id);
     }
   }, [id]);
 
-  const [open, setOpen] = useState(false);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const disableButton =
+    isUserLoggedIn ||
+    (producto && !producto.activo) ||
+    (producto &&
+      producto.opciones &&
+      producto.opciones.length > 0 &&
+      !selectedOption);
 
   return (
-    <div className="bg-gray-50 mt-10">
+    <div className="bg-gray-50 pt-10">
       <main>
+        {/* Product detail */}
         <div className="bg-white">
-          <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 sm:pb-32 sm:pt-24 md:grid md:max-w-7xl md:grid-cols-2 md:gap-x-8 md:px-8">
+          <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 pt-24 sm:px-6 sm:pb-32 md:grid md:max-w-7xl md:grid-cols-2 md:gap-x-8 md:px-8">
             {/* Product details */}
             <div className="md:max-w-lg md:self-end">
               <nav aria-label="Breadcrumb">
                 <ol role="list" className="flex items-center space-x-2">
-                  {product.breadcrumbs.map((breadcrumb, breadcrumbIdx) => (
-                    <li key={breadcrumb.id}>
-                      <div className="flex items-center text-sm">
-                        <a
-                          href={breadcrumb.href}
-                          className="font-medium text-gray-500 hover:text-gray-900"
-                        >
-                          {breadcrumb.name}
-                        </a>
-                        {breadcrumbIdx !== product.breadcrumbs.length - 1 ? (
-                          <svg
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            aria-hidden="true"
-                            className="ml-2 h-5 w-5 flex-shrink-0 text-gray-300"
-                          >
-                            <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                          </svg>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
+                  <li>
+                    <div className="flex items-center text-sm">
+                      <a className="font-medium text-gray-500 hover:text-gray-900">
+                        Productos
+                      </a>
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="ml-2 h-5 w-5 flex-shrink-0 text-gray-300"
+                      >
+                        <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                      </svg>
+                      <a className="ml-2 font-medium text-gray-500 hover:text-gray-900">
+                        {producto?.categoria}
+                      </a>
+                    </div>
+                  </li>
                 </ol>
               </nav>
 
               <div className="mt-4">
                 {producto && (
-                  <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    {producto.nombre}
-                  </h1>
+                  <>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                      {producto.nombre}
+                    </h1>
+                    <p className="mt-2 text-base font-thin text-gray-600">
+                      {producto.categoria}
+                    </p>
+                  </>
                 )}
               </div>
 
@@ -280,7 +154,8 @@ const ProductDetail = () => {
                 <div className="flex items-center">
                   {producto && (
                     <p className="text-lg text-gray-900 sm:text-xl">
-                      ${producto.precio}
+                      $ { selectedOption ? selectedOption.precio.toLocaleString("es-ES") :
+                       producto.precio.toLocaleString("es-ES")}
                     </p>
                   )}
 
@@ -322,136 +197,243 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="mt-6 flex items-center">
-                  <CheckIcon
-                    className="h-5 w-5 flex-shrink-0 text-green-500"
-                    aria-hidden="true"
-                  />
-                  <p className="ml-2 text-sm text-gray-500">
-                    In stock and ready to ship
-                  </p>
+                  {producto && producto.activo ? (
+                    <>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="#4bb453"
+                        className="h-10 w-10 flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <path
+                            d="M17 9L9.99998 16L6.99994 13"
+                            stroke="#4bb453"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path>
+                        </g>
+                      </svg>
+                      <p className="ml-2 text-sm text-gray-500">Disponible</p>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-10 w-10 flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <path
+                            d="M16 8L8 16M8.00001 8L16 16"
+                            stroke="#fc100d"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path>
+                        </g>
+                      </svg>
+                      <p className="ml-2 text-sm text-gray-500">
+                        Fuera de stock
+                      </p>
+                    </>
+                  )}
                 </div>
               </section>
             </div>
 
             {/* Product image */}
             <div className="mt-10 md:col-start-2 md:row-span-2 md:mt-0 md:self-center">
-              <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
-                {producto && (
-                  <img
-                    src={producto.fotos[0]}
-                    alt={product.imageAlt}
-                    className="h-full w-full object-cover object-center"
-                  />
-                )}
+              <div className="mt-10 md:col-start-2 md:row-span-2 md:mt-0 md:self-center">
+                <div className="aspect-h-1 aspect-w-1 relative overflow-hidden rounded-lg">
+                  {producto && (
+                    <>
+                      <img
+                        src={pictures[currentImageIndex]}
+                        alt="Producto"
+                        className="h-full w-full object-cover object-center transition-transform duration-500 ease-in-out"
+                        loading="lazy"
+                        style={{ objectFit: "cover" }}
+                      />
+                      {pictures.length > 1 && (
+                        <>
+                          <button
+                            onClick={handlePrevImage}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-800 bg-opacity-50 p-2 text-white hover:ring-2 hover:ring-white focus:outline-none focus:ring-0"
+                            aria-label="Previous image"
+                          >
+                            &#9664;
+                          </button>
+                          <button
+                            onClick={handleNextImage}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 transform rounded-full bg-gray-800 bg-opacity-50 p-2 text-white hover:ring-2 hover:ring-white focus:outline-none focus:ring-0"
+                            aria-label="Next image"
+                          >
+                            &#9654;
+                          </button>
+                          <div className="absolute bottom-0 left-1/2 mb-4 flex -translate-x-1/2 transform space-x-2">
+                            {pictures.map((_: any, index: number) => (
+                              <span
+                                key={index}
+                                className={`h-2 w-2 rounded-full ${
+                                  index === currentImageIndex
+                                    ? "bg-white"
+                                    : "bg-gray-400"
+                                }`}
+                              ></span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Product form */}
-            <div className="mt-10 md:col-start-1 md:row-start-2 md:max-w-lg md:self-start">
-              <section aria-labelledby="options-heading">
-                <h2 id="options-heading" className="sr-only">
-                  Product options
-                </h2>
+            {producto && producto.opciones && producto.opciones.length > 0 && (
+              <div className="mt-10 md:col-start-1 md:row-start-2 md:max-w-lg md:self-start">
+                <section aria-labelledby="options-heading">
+                  <h2 id="options-heading" className="sr-only">
+                    Product options
+                  </h2>
 
-                <div className="sm:flex sm:justify-between">
-                  {/* Size selector */}
-                  <RadioGroup value={selectedSize} onChange={setSelectedSize}>
-                    <RadioGroup.Label className="block text-sm font-medium text-gray-700">
-                      Size
-                    </RadioGroup.Label>
-                    <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      {product.sizes.map((size) => (
-                        <RadioGroup.Option
-                          as="div"
-                          key={size.name}
-                          value={size}
-                          className={({ active }) =>
-                            classNames(
-                              active ? "ring-2 ring-indigo-500" : "",
-                              "relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none"
-                            )
-                          }
+                  <div className="sm:flex sm:justify-between">
+                    {/* Size selector */}
+                    <RadioGroup
+                      value={selectedOption}
+                      onChange={setSelectedOption}
+                    >
+                      <RadioGroup.Label className="block text-sm font-medium text-gray-700">
+                        Opciones
+                      </RadioGroup.Label>
+                      <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {producto.opciones.map((option) => (
+                          <RadioGroup.Option
+                            as="div"
+                            key={option.nombre}
+                            value={option}
+                            className={({ active }) =>
+                              classNames(
+                                active ? "ring-2 ring-indigo-500" : "",
+                                "relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none"
+                              )
+                            }
+                          >
+                            {({ active, checked }) => (
+                              <>
+                                <RadioGroup.Label
+                                  as="p"
+                                  className="text-base font-medium text-gray-900"
+                                >
+                                  {option.nombre}
+                                </RadioGroup.Label>
+                                <RadioGroup.Description
+                                  as="p"
+                                  className="mt-1 text-sm text-gray-500"
+                                >
+                                  {option.descripcion}
+                                </RadioGroup.Description>
+                                <div
+                                  className={classNames(
+                                    active ? "border" : "border-2",
+                                    checked
+                                      ? "border-indigo-500"
+                                      : "border-transparent",
+                                    "pointer-events-none absolute -inset-px rounded-lg"
+                                  )}
+                                  aria-hidden="true"
+                                />
+                              </>
+                            )}
+                          </RadioGroup.Option>
+                        ))}
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  {producto &&
+                    producto.opciones &&
+                    producto.opciones.length > 1 && (
+                      <div className="mt-4">
+                        <a
+                          href="#"
+                          className="group inline-flex text-sm text-gray-500 hover:text-gray-700"
                         >
-                          {({ active, checked }) => (
-                            <>
-                              <RadioGroup.Label
-                                as="p"
-                                className="text-base font-medium text-gray-900"
-                              >
-                                {size.name}
-                              </RadioGroup.Label>
-                              <RadioGroup.Description
-                                as="p"
-                                className="mt-1 text-sm text-gray-500"
-                              >
-                                {size.description}
-                              </RadioGroup.Description>
-                              <div
-                                className={classNames(
-                                  active ? "border" : "border-2",
-                                  checked
-                                    ? "border-indigo-500"
-                                    : "border-transparent",
-                                  "pointer-events-none absolute -inset-px rounded-lg"
-                                )}
-                                aria-hidden="true"
-                              />
-                            </>
-                          )}
-                        </RadioGroup.Option>
-                      ))}
-                    </div>
-                  </RadioGroup>
-                </div>
-                <div className="mt-4">
-                  <a
-                    href="#"
-                    className="group inline-flex text-sm text-gray-500 hover:text-gray-700"
-                  >
-                    <span>What size should I buy?</span>
-                    <QuestionMarkCircleIcon
-                      className="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </div>
-                <div className="mt-10">
-                  <button
-                    onClick={() => handleAddToCart(producto)}
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                  >
-                    Add to bag
-                  </button>
-                </div>
-                <div className="mt-6 text-center">
-                  <a
-                    href="#"
-                    className="group inline-flex text-base font-medium"
-                  >
-                    <ShieldCheckIcon
-                      className="mr-2 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                    <span className="text-gray-500 hover:text-gray-700">
-                      Lifetime Guarantee
-                    </span>
-                  </a>
-                </div>
-              </section>
+                          <span>Que opcion deberia comprar?</span>
+                          <QuestionMarkCircleIcon
+                            className="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          />
+                        </a>
+                      </div>
+                    )}
+                </section>
+              </div>
+            )}
+            <div className="mt-10">
+              {producto &&
+                producto.opciones &&
+                producto.opciones.length > 0 &&
+                selectedOption && (
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 my-4">
+                    <p className="text-sm text-gray-500">
+                      Selección: {selectedOption?.nombre}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Precio: $ {selectedOption?.precio.toLocaleString("es-ES")}
+                    </p>
+                  </div>
+                )}
+
+              <button
+                onClick={() => {
+                  if (producto) {
+                    handleAddToCart(producto);
+                  } else {
+                    console.error("Producto no definido");
+                  }
+                }}
+                className={`flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${
+                  disableButton
+                    ? "cursor-not-allowed bg-gray-400"
+                    : "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+                }`}
+                disabled={disableButton}
+              >
+                Agregar al carrito
+              </button>
             </div>
           </div>
         </div>
 
+        {/* Details section */}
         {producto && producto.caracteristicas && (
           <div className="mx-auto max-w-2xl px-4 py-24 sm:px-6 sm:py-32 md:max-w-7xl md:px-8">
-            {/* Details section */}
             <section aria-labelledby="details-heading">
               <div className="flex flex-col items-center text-center">
                 <h2
                   id="details-heading"
                   className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
                 >
-                  The Fine Details
+                  Detalles
                 </h2>
                 <p className="mt-3 max-w-3xl text-lg text-gray-600">
                   Our patented padded snack sleeve construction protects your
@@ -467,10 +449,33 @@ const ProductDetail = () => {
                         (caracteristica: string) => (
                           <div key={caracteristica} className="relative pl-9">
                             <dt className="font-semibold text-gray-900">
-                              <CheckIcon
-                                className="absolute left-0 top-1 h-5 w-5 text-indigo-500"
-                                aria-hidden="true"
-                              />
+                              <svg
+                                className="absolute left-0 top-1 h-8 w-8"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g
+                                  id="SVGRepo_tracerCarrier"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                ></g>
+                                <g id="SVGRepo_iconCarrier">
+                                  <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M15.4933 6.93502C15.8053 7.20743 15.8374 7.68122 15.565 7.99325L7.70786 16.9933C7.56543 17.1564 7.35943 17.25 7.14287 17.25C6.9263 17.25 6.72031 17.1564 6.57788 16.9933L3.43502 13.3933C3.16261 13.0812 3.19473 12.6074 3.50677 12.335C3.8188 12.0626 4.29259 12.0947 4.565 12.4068L7.14287 15.3596L14.435 7.00677C14.7074 6.69473 15.1812 6.66261 15.4933 6.93502Z"
+                                    fill="#1C274C"
+                                  ></path>
+                                  <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M20.5175 7.01946C20.8174 7.30513 20.829 7.77986 20.5433 8.07981L11.9716 17.0798C11.8201 17.2389 11.6065 17.3235 11.3872 17.3114C11.1679 17.2993 10.9649 17.1917 10.8318 17.0169L10.4035 16.4544C10.1526 16.1249 10.2163 15.6543 10.5458 15.4034C10.8289 15.1878 11.2161 15.2044 11.4787 15.4223L19.4571 7.04531C19.7428 6.74537 20.2175 6.73379 20.5175 7.01946Z"
+                                    fill="#1C274C"
+                                  ></path>
+                                </g>
+                              </svg>
                             </dt>
                             <dd className="mt-2">{caracteristica}</dd>
                           </div>
@@ -483,6 +488,8 @@ const ProductDetail = () => {
             </section>
           </div>
         )}
+
+        {/* Tutorial */}
         {producto && producto.linkTutorial && (
           <div className="align-center flex flex flex-col items-center justify-center bg-white text-center">
             <h2 className="pt-20 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

@@ -17,7 +17,7 @@ const CustomField = ({
 }: Props) => {
   return (
     <div>
-      <label htmlFor={fieldId} className="block text-sm font-medium leading-6">
+      <label htmlFor={fieldId} className="block text-sm font-normal leading-6">
         {fieldLabel}
       </label>
       <div className="mt-2">
@@ -27,7 +27,7 @@ const CustomField = ({
           id={fieldId}
           autoComplete="family-name"
           placeholder={placeholder}
-          className="block w-full rounded-md border-0 bg-background-secondary py-1.5 pl-3 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border border-gray-300 py-1.5 pl-3 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 text-[#374151]"
         />
         <ErrorMessage
           name={fieldName}

@@ -30,7 +30,7 @@ export default {
         "cart-background": "#FFFFFF",
         "cart-text-primary": "#1a1a1a",
         "cart-text-primary-hover": "#4f46e5",
-        "cart-text-secondary": "#e0e7ff",
+        "cart-text-secondary": "#6b7280",
         "cart-text-secondary-hover": "#FFFFFF",
         
         // FOOTER
@@ -57,8 +57,6 @@ export default {
                 // IMPORTANT ==> the empty-state icon color can only be set in checkout/index.tsx
 
         // LOGIN
-        
-
         "login-background-primary": "#2B2B2B",
         "login-text-primary": "#FFFFFF",
         "login-text-secondary": "#FFFFFF",
@@ -94,6 +92,13 @@ export default {
       width: {
         '30': '30%',
       },
+      backgroundSize: {
+        '0': '0px',
+      },
+      clipPath: {
+        'polygon': 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)',
+      },
+
     },
     screens: {
       xs: "480px",

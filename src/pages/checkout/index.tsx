@@ -1,23 +1,20 @@
-import { Product } from "@/data/products";
+import { Product } from "@/types/product.type.ts";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import emailjs from "@emailjs/browser";
 import { toast } from "react-toastify";
-import { TrashIcon } from "@heroicons/react/20/solid";
-import {
-  addToCart,
-  removeAllFromCart,
-  removeFromCart,
-  resetCart,
-} from "@/store/cart";
+import { resetCart } from "@/store/cart";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { HashLink } from "react-router-hash-link";
 import CustomField from "./components/CustomField";
+import NotAvailableImg from "@/assets/adminPanel/picture-not-available.jpg";
 
 interface CartProduct {
   product: Product;
   quantity: number;
+  option?: string;
+  price: number;
 }
 
 interface Cart {
@@ -37,7 +34,7 @@ export default function Example() {
   );
 
   const subtotal = products.reduce(
-    (total, product) => total + product.product.price * product.quantity,
+    (total, product) => total + product.price * product.quantity,
     0
   );
 
@@ -48,7 +45,7 @@ export default function Example() {
   const calculeTotalAmount = () => {
     let total = 0;
     products.forEach((product) => {
-      total += product.product.price * product.quantity;
+      total += product.product.precio * product.quantity;
     });
     setTotalAmount(total);
   };
@@ -56,18 +53,6 @@ export default function Example() {
   const form = useRef<HTMLFormElement>(null);
 
   const dispatch = useDispatch();
-
-  const handleRemoveFromCart = (product: Product) => {
-    dispatch(removeFromCart(product));
-  };
-
-  const handleAddToCart = (product: Product) => {
-    dispatch(addToCart(product));
-  };
-
-  const handleRemoveAllFromCart = (product: Product) => {
-    dispatch(removeAllFromCart(product));
-  };
 
   const handleResetCart = () => {
     dispatch(resetCart());
@@ -79,7 +64,7 @@ export default function Example() {
       // Crear una cadena de texto con todos los productos y sus cantidades
       let cartItems = "";
       products.forEach((product) => {
-        cartItems += `- ${product.product.name}: ${product.quantity}`;
+        cartItems += `- ${product.product.nombre}: ${product.quantity}`;
       });
 
       // Crear un campo oculto en el formulario para los productos del carrito
@@ -104,12 +89,12 @@ export default function Example() {
           () => {
             console.log("SUCCESS!");
             handleResetCart();
-            toast.success("Email sent successfully!");
+            toast.success("Email enviado correctamente!");
             setIsLoading(false);
           },
           (error) => {
             console.log("FAILED...", error.text);
-            toast.error("Error sending email, try again later.");
+            toast.error("Error al enviar el email, prueba de nuevo mas tarde.");
             setIsLoading(false);
           }
         );
@@ -119,25 +104,25 @@ export default function Example() {
   };
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required("The first name is required"),
-    lastName: Yup.string().required("The last name is required"),
+    firstName: Yup.string().required("El nombre es obligatorio"),
+    lastName: Yup.string().required("El apellido es obligatorio"),
     email: Yup.string()
-      .email("Invalid email")
-      .required("The email is required"),
+      .email("Correo electrónico inválido")
+      .required("El correo electrónico es obligatorio"),
     phoneNumber: Yup.string()
-      .matches(/^[0-9]*$/, "Only numbers are allowed")
-      .required("The phone number is required"),
-    address: Yup.string().required("The address is required"),
+      .matches(/^[0-9]*$/, "Solo se permiten números")
+      .required("El número de teléfono es obligatorio"),
+    address: Yup.string().required("La dirección es obligatoria"),
     zipCode: Yup.string()
-      .matches(/^[0-9]*$/, "Only numbers are allowed")
-      .required("The zip code is required"),
-    city: Yup.string().required("The city is required"),
-    state: Yup.string().required("The state is required"),
-    country: Yup.string().required("The country is required"),
+      .matches(/^[0-9]*$/, "Solo se permiten números")
+      .required("El código postal es obligatorio"),
+    city: Yup.string().required("La ciudad es obligatoria"),
+    state: Yup.string().required("El estado es obligatorio"),
+    country: Yup.string().required("El país es obligatorio"),
   });
 
   return (
-    <div className="w-full bg-background-primary pt-10">
+    <div className="w-full pt-24">
       <div className="font-sans">
         <div>
           <Formik
@@ -156,19 +141,19 @@ export default function Example() {
             onSubmit={sendEmail}
           >
             <Form ref={form}>
-              <div className="mt-10 w-full">
-                <div className="mx-10 flex flex-col sm:flex-row">
+              <div className="w-full">
+                <div className="mx-auto flex max-w-7xl flex-col md:flex-row">
                   {/* CONTACT FORM */}
-                  <div className="w-full text-text-primary sm:w-2/3">
+                  <div className="order-2 w-full p-10 text-text-primary md:order-1 md:w-2/3">
                     <div className="">
-                      <h1 className="text-3xl font-bold tracking-tight text-text-title">
-                        Contact Details
+                      <h1 className="text-lg font-medium text-[#111826]">
+                        Detalles de contacto
                       </h1>
-                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                      <div className="mt-4 grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-4">
                         <CustomField
                           fieldName="firstName"
                           fieldId="first-name"
-                          fieldLabel="First name"
+                          fieldLabel="Nombre"
                           placeholder="Charlie"
                           fieldType="text"
                         />
@@ -176,7 +161,7 @@ export default function Example() {
                         <CustomField
                           fieldName="lastName"
                           fieldId="last-name"
-                          fieldLabel="Last name"
+                          fieldLabel="Apellido"
                           placeholder="Harper"
                           fieldType="text"
                         />
@@ -184,7 +169,7 @@ export default function Example() {
                         <CustomField
                           fieldName="email"
                           fieldId="email"
-                          fieldLabel="Email address"
+                          fieldLabel="Correo electrónico"
                           placeholder="charlie.harper@example.com"
                           fieldType="email"
                         />
@@ -192,37 +177,36 @@ export default function Example() {
                         <CustomField
                           fieldName="phoneNumber"
                           fieldId="phone-number"
-                          fieldLabel="Phone number"
+                          fieldLabel="Teléfono"
                           placeholder="+1 555 987 6543"
                           fieldType="text"
                         />
                       </div>
                     </div>
-                    <div className="mb-10 mt-10 border-t border-gray-500 pt-10">
-                      <h1 className="text-3xl font-bold tracking-tight text-text-title">
-                        Shipping Address
+                    <div className="mb-10 mt-10 border-t border-[#E5E7EB] pt-10">
+                      <h1 className="text-lg font-medium tracking-tight">
+                        Dirección de envío
                       </h1>
-                      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                      <div className="mb-10 mt-4 grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-4">
                         <CustomField
                           fieldName="address"
                           fieldId="address"
-                          fieldLabel="Address"
+                          fieldLabel="Calle y número"
                           placeholder="1132 Malibu Road"
                           fieldType="text"
                         />
-
                         <CustomField
-                          fieldName="zipCode"
-                          fieldId="zip-code"
-                          fieldLabel="ZIP code"
-                          placeholder="90265"
+                          fieldName="address"
+                          fieldId="address"
+                          fieldLabel="Piso y departamento (opcional)"
+                          placeholder="1132 Malibu Road"
                           fieldType="text"
                         />
 
                         <CustomField
                           fieldName="city"
                           fieldId="city"
-                          fieldLabel="City"
+                          fieldLabel="Localidad"
                           placeholder="Malibu"
                           fieldType="text"
                         />
@@ -230,127 +214,105 @@ export default function Example() {
                         <CustomField
                           fieldName="state"
                           fieldId="state"
-                          fieldLabel="State / Province"
+                          fieldLabel="Provincia"
                           placeholder="California"
                           fieldType="text"
                         />
-
                         <CustomField
-                          fieldName="country"
-                          fieldId="country"
-                          fieldLabel="Country"
-                          placeholder="United States"
+                          fieldName="zipCode"
+                          fieldId="zip-code"
+                          fieldLabel="Código postal / ZIP"
+                          placeholder="90265"
                           fieldType="text"
                         />
+                      </div>
+                      <div className="border-gray-[#E5E7EB] border-t px-4 py-6 md:px-6">
+                        <button
+                          type="submit"
+                          className={`flex w-full items-center justify-center rounded-md border border-transparent px-4 py-3 
+                              text-base font-medium shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 
+                              ${
+                                isLoading || products.length === 0
+                                  ? "scale-90 cursor-not-allowed bg-gray-400"
+                                  : "bg-accent hover:bg-accent-hover focus:ring-indigo-300 focus:ring-offset-gray-50"
+                              } text-text-button`}
+                          disabled={isLoading || products.length === 0}
+                        >
+                          {isLoading ? (
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-blue-600" />
+                          ) : (
+                            "Confirmar pedido"
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>
 
                   {/* SIDEBAR */}
-                  <div className="mb-10 mt-10 w-full sm:ml-10 sm:mt-0 sm:w-1/2">
+                  <div className="order-1 w-full bg-[#F9FAFB] p-10 md:order-2 md:w-1/2">
                     <div className="flex items-end justify-between">
-                      <h1 className="mb-5 text-3xl font-bold tracking-tight text-text-title">
-                        Your Order
+                      <h1 className="mb-5 text-lg font-medium tracking-tight text-[#111827]">
+                        Tu orden
                       </h1>
-                      <p className="mb-5 mr-2 text-sm font-medium leading-6 text-text-secondary">
-                        {products.reduce(
-                          (total, product) => (total += product.quantity),
-                          0
-                        )}
-                        {products.length === 1 ? "item" : "items"}
-                      </p>
                     </div>
-                    <div className="rounded-lg border border-gray-500 bg-background-secondary text-text-primary shadow-sm">
+                    <div className="text-text-primary">
                       {/* CART */}
                       <div>
                         {products.length !== 0 && (
                           <div>
                             <ul
                               role="list"
-                              className="h-96 divide-y divide-gray-500 overflow-auto border-b border-gray-500"
+                              className="divide-y divide-[#E5E7EB] overflow-auto border-b border-gray-300 pb-10"
                             >
-                              {products.map((product) => (
+                              {products.map((product, index) => (
                                 <li
-                                  key={product.product.name}
-                                  className="flex border-b border-gray-500 px-4 py-6 transition-colors duration-200 ease-in-out hover:bg-gray-500/10 sm:px-6"
+                                  key={index}
+                                  className="flex border-t border-white border-opacity-25 py-6"
                                 >
-                                  <div className="flex-shrink-0">
+                                  <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-300">
                                     <img
-                                      src={product.product.image}
-                                      alt=""
-                                      className="w-20 rounded-md"
+                                      src={
+                                        product.product.fotos &&
+                                        product.product.fotos.length > 0
+                                          ? product.product.fotos[0]
+                                          : NotAvailableImg
+                                      }
+                                      alt={product.product.nombre}
+                                      className="h-full w-full object-cover object-center"
                                     />
                                   </div>
 
-                                  <div className="ml-6 flex flex-1 flex-col">
-                                    <div className="flex">
-                                      <div className="min-w-0 flex-1">
-                                        <h4 className="text-sm">
-                                          <a className="font-medium">
-                                            {product.product.name}
+                                  <div className="ml-4 flex flex-1 flex-col py-1">
+                                    <div>
+                                      <div className="flex justify-between">
+                                        <h3>
+                                          <a
+                                            href={`products/${index}`}
+                                            className="text-2xl font-medium text-cart-text-primary"
+                                          >
+                                            {product.product.nombre}
                                           </a>
-                                        </h4>
-                                        <p className="mt-1 text-sm text-text-secondary">
-                                          {product.product.moreInfo.brand}
-                                        </p>
-                                      </div>
-
-                                      <div className="ml-1 flow-root flex-shrink-0">
-                                        <button
-                                          type="button"
-                                          className="-m-2.5 flex items-center justify-center rounded-xl p-2.5 text-text-primary transition-colors duration-200 ease-in-out"
-                                          onClick={() =>
-                                            handleRemoveAllFromCart(
-                                              product.product
-                                            )
-                                          }
-                                        >
-                                          <span className="sr-only">
-                                            Remove
-                                          </span>
-                                          <TrashIcon
-                                            className="h-5 w-5 text-text-primary"
-                                            aria-hidden="true"
-                                          />
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    <div className="flex flex-1 items-center justify-between pt-2">
-                                      <p className="mt-1 text-sm font-medium text-text-primary">
-                                        $ {product.product.price}
-                                      </p>
-                                      <div className="ml-4">
-                                        <label className="sr-only">
-                                          Quantity
-                                        </label>
-                                        <div className="flex items-center">
-                                          <button
-                                            type="button"
-                                            className="rounded-l-md border border-text-secondary px-2 py-1 text-sm font-medium text-text-primary hover:bg-accent"
-                                            onClick={() =>
-                                              handleRemoveFromCart(
-                                                product.product
-                                              )
-                                            }
-                                          >
-                                            <strong> - </strong>
-                                          </button>
-                                          <div className="w-12 border-b border-t border-gray-300 px-2 py-1 text-center text-sm font-medium text-text-primary">
-                                            {product.quantity}
-                                          </div>
-                                          <button
-                                            type="button"
-                                            className="rounded-r-md border border-gray-300 px-2 py-1 text-sm font-medium text-text-primary hover:bg-accent"
-                                            onClick={() =>
-                                              handleAddToCart(product.product)
-                                            }
-                                          >
-                                            +
-                                          </button>
+                                        </h3>
+                                        <div className="flex">
+                                          <p className="text-cart-text-secondary">
+                                            cant.: {product.quantity}
+                                          </p>
                                         </div>
                                       </div>
+                                      {product.option && (
+                                        <p className="text-lg text-cart-text-secondary">
+                                          {product.option}
+                                        </p>
+                                      )}
                                     </div>
+
+                                    <div className="flex flex-1 items-end justify-between text-lg"></div>
+                                    <p className="text-cart-text-secondary text-xl">
+                                      $
+                                      {(
+                                        product.price * product.quantity
+                                      ).toLocaleString("de-DE")}
+                                    </p>
                                   </div>
                                 </li>
                               ))}
@@ -380,20 +342,20 @@ export default function Example() {
                                 />
                               </svg>
                               <span className="my-2 block text-sm font-semibold text-text-primary">
-                                It looks like you haven’t added any products to
-                                your cart yet.
+                                Parece que aún no has añadido ningún producto a
+                                tu carrito.
                                 <br />
-                                Start shopping now and treat yourself to some
-                                beauty magic!
+                                ¡Comienza a comprar ahora y date un capricho con
+                                las mejores luces para tu indoor!
                               </span>
                               <button>
                                 <HashLink
                                   smooth
                                   to="/products#top"
                                   className="mt-8 inline-flex items-center rounded-md border border-transparent bg-accent px-4 py-2 
-                                  text-sm font-medium text-text-button hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                  text-sm font-medium text-text-button hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
                                 >
-                                  Start shopping
+                                  Comienza a comprar
                                 </HashLink>
                               </button>
                             </div>
@@ -403,33 +365,14 @@ export default function Example() {
 
                       {/* TOTAL */}
                       <div>
-                        <dl className="space-y-6 border-gray-500 px-4 py-6 text-text-primary sm:px-6">
-                          <div className="flex items-center justify-between text-2xl">
+                        <dl className="space-y-6 border-gray-300 px-4 py-6 text-text-primary sm:px-6">
+                          <div className="flex items-center justify-between">
                             <dt className="font-medium">Total</dt>
                             <dd className="mr-2 font-medium">
                               $ {subtotal.toFixed(2)}
                             </dd>
-                          </div>
+                          </div> 
                         </dl>
-                        <div className="border-t border-gray-500 px-4 py-6 sm:px-6">
-                          <button
-                            type="submit"
-                            className={`flex w-full items-center justify-center rounded-md border border-transparent px-4 py-3 
-                              text-base font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 
-                              ${
-                                isLoading || products.length === 0
-                                  ? "scale-90 cursor-not-allowed bg-gray-400"
-                                  : "bg-accent hover:bg-accent-hover focus:ring-indigo-500 focus:ring-offset-gray-50"
-                              } text-text-button`}
-                            disabled={isLoading || products.length === 0}
-                          >
-                            {isLoading ? (
-                              <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-blue-600" />
-                            ) : (
-                              "Confirm order"
-                            )}
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </div>

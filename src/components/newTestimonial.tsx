@@ -1,6 +1,3 @@
-import Person1 from "@/assets/testimonials/person1.webp";
-import Person2 from "@/assets/testimonials/person2.webp";
-
 type Props = {
     name: string;
     image: string;
@@ -14,7 +11,7 @@ export const TestimonialSection =  ({ name, image, description }: Props) => {
         <div className="mb-2 flex justify-center">
           {/* Five stars */}
           {Array(5)
-            .fill()
+            .fill(null)
             .map((_, i) => (
             <svg
                 key={i}
@@ -26,7 +23,7 @@ export const TestimonialSection =  ({ name, image, description }: Props) => {
             >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l2.042 6.627L21 9.386l-5 4.772L17.958 21 12 17.27 6.042 21l1.958-6.842L3 9.386l6.958-.759L12 2z" />
             </svg>
-            ))}
+          ))}
         </div>
         <p className="text-lg text-white font-thin tracking-tight ">
           {description}

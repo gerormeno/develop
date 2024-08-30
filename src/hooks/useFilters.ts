@@ -1,25 +1,17 @@
-// useFilters.ts
 import { useCallback, useMemo } from "react";
-import { Product, products } from "@/data/products";
-import {
-  filterByBrand,
-  filterByCategory,
-  filterBySkinType,
-} from "@/pages/catalog/utils/filters";
 import { sortProducts } from "@/pages/catalog/utils/sortProducts";
+import { filterByCategory } from "@/pages/catalog/utils/filters";
+import { Product } from "@/types/product.type";
 
 export const useFilters = (
   activeFilters: string[],
   activeSort: string,
-  sortType: string
+  sortType: string,
+  products: Product[]
 ) => {
   const filterProducts = useCallback(
     (product: Product) => {
-      return (
-        filterByBrand(product, activeFilters) &&
-        filterByCategory(product, activeFilters) &&
-        filterBySkinType(product, activeFilters)
-      );
+      return filterByCategory(product, activeFilters);
     },
     [activeFilters]
   );
