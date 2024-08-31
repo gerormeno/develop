@@ -3,10 +3,14 @@ import KIEVLogoRecortado from "@/assets/kiev-logo-recortado.png";
 import ShopByCategory2 from "./components/ShopByCategory2";
 import InnovationSection from "./components/InnovationSection";
 import StaticImageBanner from "@/components/StaticImageBanner";
-import Video from "@/assets/cannabis-plant-indoor-2-compressed.mp4";
-import SkeletonPicture from "@/assets/cannabis-plant-indoor-2-skeleton.webp";
+import { useEffect } from "react";
+import Aos from "aos";
 
 const Home = () => {
+  useEffect(() => {
+    Aos.init({ duration: 1000 });
+  }, []);
+
   return (
     <div className="bg-background-primary">
       <VideoBanner
@@ -16,8 +20,6 @@ const Home = () => {
         redirection="/products#top"
         logoSrc={KIEVLogoRecortado}
         topDescription="INNOVACIÓN NACIONAL"
-        videoSrc={Video}
-        skeletonSrc={SkeletonPicture}
       />
 
       <ShopByCategory2 />

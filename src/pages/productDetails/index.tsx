@@ -9,6 +9,7 @@ import { QuestionMarkCircleIcon, StarIcon } from "@heroicons/react/20/solid";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/cart";
 import { Product } from "@/types/product.type";
+import { toast } from "react-toastify";
 
 const reviews = {
   average: 4,
@@ -63,6 +64,11 @@ const ProductDetail = () => {
           })
         )
       : dispatch(addToCart({ product: product, price: product.precio }));
+    notifyAddToCart();
+  };
+
+  const notifyAddToCart = () => {
+    toast.success("Product added to cart!");
   };
 
   const getProduct = async (productName: string) => {

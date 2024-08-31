@@ -3,7 +3,6 @@ import { PhotoIcon } from "@heroicons/react/24/solid";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ProductFeaturesList from "@/pages/productManager/components/ProductFeaturesList";
 import { useState } from "react";
-import OptionsTable from "./OptionsTable";
 import { Product } from "@/types/product.type";
 import { deleteObject, getDownloadURL, ref, uploadBytes, } from "firebase/storage";
 import { storage } from "@/firebase-config";
@@ -115,8 +114,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialFormState, action }) =
                   {`${action === "CREATE" ? "Crear" : "Modificar"} Producto`}
                 </h1>
                 <p className="mt-1 pl-1 text-sm leading-6 text-gray-600">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit
-                  minima? Quibusdam aut minima cumque earum voluptate.
+                  <strong>¡IMPORTANTE!</strong> Recordá revisar que todos los datos sean correctos antes de guardar.                  
                 </p>
               </div>
 
@@ -260,11 +258,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialFormState, action }) =
               </div>
 
               <div className="col-span-full">
-                <OptionsTable
+                {/* <OptionsTable
                   options={formState.opciones}
                   editOption={() => {}}
                   createOption={() => {}}
-                />
+                /> */}
               </div>
 
               {/* Imagenes */}
@@ -326,6 +324,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialFormState, action }) =
                   )}
                 </div>
               </div>
+
               <YoutubeThumbnail />
             </div>
           </div>
@@ -353,7 +352,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialFormState, action }) =
         open={openModalCancel}
         setOpen={setOpenModalCancel}
         title="Cancelar"
-        message={`¿Estás seguro que deseas cancelar la ${action === "CREATE" ? "creación" : "edición"} de este producto?`}
+        message={`¿Estás seguro de que querés cancelar la ${action === "CREATE" ? "creación" : "edición"} de este producto?`}
         confirmText="Sí, cancelar"
         cancelText="No, continuar"
       />

@@ -1,3 +1,5 @@
+import "aos/dist/aos.css";
+
 type Props = {
     name: string;
     image: string;

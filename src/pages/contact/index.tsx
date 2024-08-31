@@ -1,8 +1,9 @@
-import { SVGProps } from "react";
+import { SVGProps, useEffect } from "react";
 import LocationSection from "./components/LocationSection";
 import Video from "@/assets/cannabis-plant-indoor-2-compressed.mp4";
 import { HashLink } from "react-router-hash-link";
 import SkeletonPicture from "@/assets/cannabis-plant-indoor-2-skeleton.webp";
+import Aos from "aos";
 
 const footerNavigation = {
   sections: [
@@ -88,6 +89,9 @@ const footerNavigation = {
 };
 
 const ContactSection = () => {
+  useEffect(() => {
+    Aos.init({ duration: 1000 });
+  }, []);
   return (
     <>
       <section className="lg:px-8 mx-auto">
@@ -101,34 +105,34 @@ const ContactSection = () => {
               muted
               playsInline
               preload="auto"
-            poster={SkeletonPicture}
+              poster={SkeletonPicture}
             />
           </div>
           <div className="lg:px-16 relative flex w-full items-center justify-center bg-gray-900 bg-opacity-40 px-6 py-20 sm:px-12">
-            <div className="relative mx-auto flex max-w-3xl flex-col items-center pt-20 md:max-w-7xl text-center md:flex-row md:text-left">
-              <div className="mr-0 md:mr-20">
+            <div className="relative mx-auto flex max-w-3xl flex-col items-center pt-20 text-center md:max-w-7xl md:flex-row md:text-left">
+              <div className="mr-0 md:mr-20" data-aos="zoom-in-right">
                 <h2
                   id="impacto-social-titulo"
-                  className="text-2xl tracking-tight text-white sm:text-4xl font-medium"
+                  className="text-2xl font-medium tracking-tight text-white sm:text-4xl"
                 >
-                  <span className="block sm:inline text-center md:text-left">
+                  <span className="block text-center sm:inline md:text-left">
                     ¡Nos encantaría saber más de vos! <br />
                     Ponete en contacto con nosotros:
                   </span>
                 </h2>
 
-                <p className="text-lg mt-3 max-w-3xl tracking-tight font-thin text-gray-300 text-center md:text-left">
+                <p className="mt-3 max-w-3xl text-center text-lg font-thin tracking-tight text-gray-300 md:text-left">
                   <strong>Teléfono:</strong> 3584 40-7047
                   <br />
                   <strong>Email:</strong> kievtecnologia420@gmail.com
                   <br />
                 </p>
-                <p className="mt-3 max-w-3xl text-lg tracking-tight text-white text-center md:text-left">
+                <p className="mt-3 max-w-3xl text-center text-lg tracking-tight text-white md:text-left">
                   <strong>Completá nuestro formulario de contacto</strong> y te
                   responderemos lo antes posible.
                   <br />
                 </p>
-                <div className="mt-12 flex space-x-6 justify-center pl-0">
+                <div className="mt-12 flex justify-center space-x-6 pl-0">
                   {footerNavigation.social.map((item) => (
                     <HashLink
                       key={item.name}
@@ -136,12 +140,18 @@ const ContactSection = () => {
                       className="text-slate-400 hover:text-slate-500"
                     >
                       <span className="sr-only">{item.name}</span>
-                      <item.icon className="h-8 w-8 md:h-10 md:w-10" aria-hidden="true" />
+                      <item.icon
+                        className="h-8 w-8 md:h-10 md:w-10"
+                        aria-hidden="true"
+                      />
                     </HashLink>
                   ))}
                 </div>
               </div>
-              <div className="mt-10 w-full max-w-md rounded-2xl bg-black bg-opacity-40 p-8 backdrop-blur-md backdrop-filter">
+              <div
+                className="mt-10 w-full max-w-md rounded-2xl bg-black bg-opacity-40 p-8 backdrop-blur-md backdrop-filter"
+                data-aos="zoom-in-left"
+              >
                 <form className="space-y-4">
                   <div>
                     <label

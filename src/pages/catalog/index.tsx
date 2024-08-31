@@ -8,6 +8,7 @@ import { Product } from "@/types/product.type";
 import Filters from "./components/Filters";
 import { useProductSelection } from "@/hooks/useProductSelection";
 import { sortProducts } from "./utils/sortProducts";
+import Aos from "aos";
 
 const Catalog = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -18,7 +19,9 @@ const Catalog = () => {
 
   const getProducts = async () => {
     const productsSnapshot = await getDocs(productsCollection);
-    let productsList = productsSnapshot.docs.map((doc) => doc.data()) as Product[];
+    let productsList = productsSnapshot.docs.map((doc) =>
+      doc.data()
+    ) as Product[];
     setProducts(productsList);
     if (activeFilters) {
       productsList = orderAndFilterProducts(productsList);
@@ -47,6 +50,10 @@ const Catalog = () => {
     setCatalogProducts(orderAndFilterProducts(products));
   }, [activeFilters, activeSort, sortType]);
 
+  useEffect(() => {
+    Aos.init({ duration: 1000 });
+  }, []);
+
   return (
     <section className="lg:px-8 mx-auto">
       <div className="relative h-full w-full overflow-hidden">
@@ -60,20 +67,23 @@ const Catalog = () => {
         ></div>
         <div className="lg:px-16 relative flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-75 px-3 py-20 sm:px-12">
           <div className="relative mx-auto flex max-w-7xl flex-col items-center pt-20 text-center">
-            <h2
-              id="social-impact-heading"
-              className="text-4xl tracking-tight text-white sm:text-7xl"
-            >
-              <span className="block sm:inline">Nuestros productos</span>
-            </h2>
-
-            <p className="mt-3 max-w-3xl font-thin text-gray-300 text-lg">
-              Todos nuestros productos están realizados
-              impresos en 3D con filamento PETg, el cual a diferencia de otros
-              filamentos es mucho más resistente a las temperaturas, por lo que
-              no se deforma con los ciclos térmicos, y también mucho más
-              resistentes a los esfuerzos cortantes y de demás solicitaciones.
+            <div data-aos="zoom-in-left">
+              <h2
+                id="social-impact-heading"
+                className="text-4xl font-medium tracking-tight text-white sm:text-6xl"
+              >
+                <span className="block sm:inline">Nuestros productos</span>
+              </h2>
+            </div>
+          <div data-aos="zoom-in-right">
+            <p className="mt-3 max-w-3xl text-lg font-thin text-gray-300">
+              Todos nuestros productos están realizados impresos en 3D con
+              filamento PETg, el cual a diferencia de otros filamentos es mucho
+              más resistente a las temperaturas, por lo que no se deforma con
+              los ciclos térmicos, y también mucho más resistentes a los
+              esfuerzos cortantes y de demás solicitaciones.
             </p>
+          </div>
 
             <div className="mx-auto mt-10 w-full rounded-2xl bg-black bg-opacity-40 px-10 py-5 backdrop-blur-md backdrop-filter">
               <div className="mx-auto w-full">

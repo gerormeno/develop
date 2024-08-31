@@ -1,13 +1,14 @@
 const InnovationSection = () => {
+  
   return (
     <div className="mb-20">
       <div className="mx-auto mt-20 mb-10 flex max-w-4xl flex-col items-center justify-between bg-white p-6 md:flex-row md:items-start">
-        <div className="mb-6 md:mb-0">
+        <div className="mb-6 md:mb-0" data-aos="zoom-in-right">
           <h1 className="mb-4 text-4xl text-black text-center">
             Innovación en artefactos para cultivos
           </h1>
         </div>
-        <div className="text-center md:ml-10 md:text-left">
+        <div className="text-center md:ml-10 md:text-left" data-aos="zoom-in-up">
           <p className="mb-4 text-gray-700">
             Somos una agencia que vende artefactos para cultivos, como lámparas
             y humidificadores, destacándonos por usar productos argentinos en

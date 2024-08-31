@@ -12,11 +12,11 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useDispatch, useSelector } from "react-redux";
 import { invertSort, setFilters, setSort } from "@/store/filters";
 
-const sortOptions = [{ name: "A - Z" }, { name: "Price" }];
+const sortOptions = [{ name: "A - Z" }, { name: "Precio" }];
 const filters = [
   {
     id: "categoria",
-    name: "Categoria",
+    name: "Categoría",
     options: [
       { value: "Lámparas", label: "Lámparas", checked: false },
       { value: "Ventiladores", label: "Ventiladores", checked: false },

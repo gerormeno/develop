@@ -1,3 +1,9 @@
+import HumidificadorPicture from "@/assets/products/H5-1.webp";
+import FocoPicture from "@/assets/products/Foco 40W.png";
+import A200Picture from "@/assets/products/A200-foto-2.webp";
+import A360Picture from "@/assets/products/A360-2.webp";
+import PoleaPicture from "@/assets/products/Polea.png";
+
 export default function AboutUsSection() {
   return (
     <div className="pt-20 bg-white">
@@ -48,7 +54,7 @@ export default function AboutUsSection() {
           <div className="overflow-hidden">
             <div className="lg:px-8 mx-auto max-w-7xl px-6 pt-20">
               <div className="lg:mx-0 lg:flex lg:max-w-none lg:items-center mx-auto max-w-2xl gap-x-14">
-                <div className="lg:shrink-0 xl:max-w-2xl w-full max-w-xl">
+                <div className="lg:shrink-0 xl:max-w-2xl w-full max-w-xl" data-aos="zoom-in-right">
                   <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
                     Llevamos tu cultivo al siguiente nivel.
                   </h1>
@@ -62,9 +68,9 @@ export default function AboutUsSection() {
                 </div>
                 <div className="lg:mt-0 lg:pl-0 mt-14 flex justify-end gap-8 sm:-mt-44 sm:justify-start sm:pl-20">
                   <div className="lg:order-last lg:pt-36 xl:order-none xl:pt-80 ml-auto w-44 flex-none space-y-8 pt-32 sm:ml-0 sm:pt-80">
-                    <div className="relative">
+                    <div className="relative" data-aos="zoom-in-right">
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/kiev-ingenieria-ecommerc-800f3.appspot.com/o/productos%2FA200%2FA200-foto-2.webp?alt=media&token=df2e082e-647f-4811-8e9c-0f1527acb1cd"
+                        src={A200Picture}
                         alt=""
                         className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                       />
@@ -72,17 +78,17 @@ export default function AboutUsSection() {
                     </div>
                   </div>
                   <div className="lg:pt-36 mr-auto w-44 flex-none space-y-8 sm:mr-0 sm:pt-52">
-                    <div className="relative">
+                    <div className="relative" data-aos="zoom-in-up">
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/kiev-ingenieria-ecommerc-800f3.appspot.com/o/productos%2FFoco%2040W.png?alt=media&token=7d697c88-6471-4705-829e-eaf51f319540"
+                        src={FocoPicture}
                         alt=""
                         className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                       />
                       <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
                     </div>
-                    <div className="relative">
+                    <div className="relative" data-aos="zoom-in-up">
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/kiev-ingenieria-ecommerc-800f3.appspot.com/o/productos%2FPolea.png?alt=media&token=060a953a-f847-4fe8-8514-a71fd4a44449"
+                        src={PoleaPicture}
                         alt=""
                         className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                       />
@@ -90,17 +96,17 @@ export default function AboutUsSection() {
                     </div>
                   </div>
                   <div className="w-44 flex-none space-y-8 pt-32 sm:pt-0">
-                    <div className="relative">
+                    <div className="relative" data-aos="zoom-in-left">
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/kiev-ingenieria-ecommerc-800f3.appspot.com/o/productos%2FH5%2FH5-1.webp?alt=media&token=ab9e3999-b8de-42c2-8c18-e89d40678f5b"
+                        src={HumidificadorPicture}
                         alt=""
                         className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                       />
                       <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
                     </div>
-                    <div className="relative">
+                    <div className="relative" data-aos="zoom-in-left">
                       <img
-                        src="https://firebasestorage.googleapis.com/v0/b/kiev-ingenieria-ecommerc-800f3.appspot.com/o/productos%2FA360%2FA360-2.webp?alt=media&token=bdb72d4f-06be-4af2-af3d-f83c6d4e18dd"
+                        src={A360Picture}
                         alt=""
                         className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                       />

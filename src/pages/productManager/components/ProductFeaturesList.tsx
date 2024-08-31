@@ -121,7 +121,7 @@ const ProductFeaturesList: React.FC<ProductFeaturesListProps> = ({
                                   setEditingValue(e.target.value)
                                 }
                                 style={{ width: `${spanWidth}px` }}
-                                className="rounded-md border border-gray-300 px-3 py-1 transition duration-150 ease-in-out focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500"
+                                className="rounded-md border border-gray-300 px-3 py-1 transition duration-150 ease-in-out focus:border-red-500 focus:outline-none focus:ring focus:ring-blue-500"
                               />
                             ) : (
                               <span ref={spanRef} className="block">
@@ -266,7 +266,7 @@ const ProductFeaturesList: React.FC<ProductFeaturesListProps> = ({
                             type="text"
                             value={newItem}
                             onChange={(e) => setNewItem(e.target.value)}
-                            className="rounded-md border border-gray-300 px-3 py-1 transition duration-150 ease-in-out focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500"
+                            className="w-full rounded-md border border-gray-300 px-3 py-1 transition duration-150 ease-in-out focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-500"
                           />
                         </div>
                       </div>

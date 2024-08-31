@@ -11,7 +11,7 @@ type Props = {
 
 const ProductCard = ({ name, category, picture, price, id }: Props) => {
   return (
-    <div className="relative w-52 p-5 sm:w-80">
+    <div className="relative w-52 p-5 sm:w-80" data-aos="fade-up">
       <HashLink smooth to={`/products/${id}#top`}>
         <img
           src={picture ? picture : GenericProductImage}
