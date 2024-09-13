@@ -87,13 +87,11 @@ export default function Example() {
         })
         .then(
           () => {
-            console.log("SUCCESS!");
             handleResetCart();
             toast.success("Email enviado correctamente!");
             setIsLoading(false);
           },
-          (error) => {
-            console.log("FAILED...", error.text);
+          () => {
             toast.error("Error al enviar el email, prueba de nuevo mas tarde.");
             setIsLoading(false);
           }
@@ -311,7 +309,7 @@ export default function Example() {
                                       $
                                       {(
                                         product.price * product.quantity
-                                      ).toLocaleString("de-DE")}
+                                      ).toLocaleString("es-ES")}
                                     </p>
                                   </div>
                                 </li>
@@ -331,8 +329,8 @@ export default function Example() {
                                 shape-rendering="geometricPrecision"
                                 text-rendering="geometricPrecision"
                                 image-rendering="optimizeQuality"
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
+                                fillRule="evenodd"
+                                clipRule="evenodd"
                                 viewBox="0 0 403 512.4"
                                 className="text-primary mx-auto mb-6 h-24 w-24"
                               >

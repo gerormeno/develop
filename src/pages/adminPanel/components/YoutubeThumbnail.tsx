@@ -1,17 +1,35 @@
 import React, { useState } from 'react';
 
-const YoutubeThumbnail: React.FC = () => {
-  const [tutorialLink, setTutorialLink] = useState("");
+const getYoutubeVideoId = (url: string): string | null => {
+  if (typeof url !== 'string') {
+    return null;
+  }
+  const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/);
+  return match ? match[1] : null;
+};
+
+const useYoutubeThumbnail = (initialLink: string, onLinkChange: (link: string) => void) => {
+  const [tutorialLink, setTutorialLink] = useState(initialLink);
+  const [videoId, setVideoId] = useState<string | null>(getYoutubeVideoId(initialLink));
 
   const handleYoutubeLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTutorialLink(event.target.value);
+    const url = event.target.value;
+    setTutorialLink(url);
+    const id = getYoutubeVideoId(url);
+    setVideoId(id);
+    onLinkChange(url);
   };
 
-  const getYoutubeThumbnail = (url: string) => {
-    const videoId = url.split('v=')[1];
-    const ampersandPosition = videoId.indexOf('&');
-    return ampersandPosition !== -1 ? videoId.substring(0, ampersandPosition) : videoId;
-  };
+  return { tutorialLink, videoId, handleYoutubeLinkChange };
+};
+
+interface YoutubeThumbnailProps {
+  link: string;
+  onLinkChange: (link: string) => void;
+}
+
+const YoutubeThumbnail: React.FC<YoutubeThumbnailProps> = ({ link, onLinkChange }) => {
+  const { tutorialLink, videoId, handleYoutubeLinkChange } = useYoutubeThumbnail(link, onLinkChange);
 
   return (
     <div className="col-span-full">
@@ -35,11 +53,11 @@ const YoutubeThumbnail: React.FC = () => {
             />
           </div>
         </div>
-        {tutorialLink && (
+        {videoId && (
           <div className="ml-4 flex items-center">
             <a href={tutorialLink} target="_blank" rel="noopener noreferrer">
               <img
-                src={`https://img.youtube.com/vi/${getYoutubeThumbnail(tutorialLink)}/0.jpg`}
+                src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
                 alt="YouTube Thumbnail"
                 className="h-16 w-28 rounded-md shadow-sm transition-transform duration-200 hover:scale-105"
               />

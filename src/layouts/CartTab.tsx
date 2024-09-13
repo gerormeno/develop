@@ -15,6 +15,7 @@ import { HashLink } from "react-router-hash-link";
 import { theme } from "@/theme";
 import NotAvailableImg from "@/assets/adminPanel/picture-not-available.jpg";
 import { Product } from "@/types/product.type";
+import RemoveIcon from "@/assets/icons/RemoveIcon";
 
 interface CartProduct {
   product: Product;
@@ -168,7 +169,7 @@ const CartTab = () => {
                                             )
                                           }
                                         >
-                                          Remove
+                                          <RemoveIcon />
                                         </button>
                                       </div>
                                     </div>
@@ -202,8 +203,8 @@ const CartTab = () => {
                                   shape-rendering="geometricPrecision"
                                   text-rendering="geometricPrecision"
                                   image-rendering="optimizeQuality"
-                                  fill-rule="evenodd"
-                                  clip-rule="evenodd"
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
                                   viewBox="0 0 403 512.4"
                                   className="mx-auto mb-6 h-24 w-24 text-cart-text-primary"
                                 >

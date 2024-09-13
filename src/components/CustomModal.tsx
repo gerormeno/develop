@@ -14,6 +14,8 @@ type CustomModalProps = {
   message: string;
   confirmText: string;
   cancelText: string;
+  onConfirm: () => void;
+  onCancel: () => void;
 };
 
 export default function CustomModal({
@@ -23,8 +25,9 @@ export default function CustomModal({
   message,
   confirmText,
   cancelText,
+  onConfirm,
+  onCancel,
 }: CustomModalProps) {
-
   return (
     <Transition show={open}>
       <Dialog
@@ -32,12 +35,6 @@ export default function CustomModal({
         onClose={setOpen}
         className="relative z-10"
         as="div"
-        data-enter="duration-500"
-        data-leave="duration-500"
-        data-enter-start="opacity-0 scale-95"
-        data-enter-end="opacity-100 scale-100"
-        data-leave-start="opacity-100 scale-100"
-        data-leave-end="opacity-0 scale-95"
       >
         <TransitionChild
           enter="ease-in-out duration-500"
@@ -84,7 +81,10 @@ export default function CustomModal({
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      onConfirm();
+                      setOpen(false);
+                    }}
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                   >
                     {confirmText}
@@ -92,7 +92,10 @@ export default function CustomModal({
                   <button
                     type="button"
                     data-autofocus
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      onCancel();
+                      setOpen(false);
+                    }}
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                   >
                     {cancelText}

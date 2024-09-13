@@ -30,11 +30,13 @@ const Banner = ({
           <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
             <h2
               id="social-impact-heading"
-              className="text-3xl font-bold tracking-tight text-white sm:text-4xl"
+              className="text-5xl font-bold tracking-tight text-white"
             >
               <span className="block sm:inline">{title}</span>
             </h2>
-            {description && <p className="mt-3 text-xl text-white">{description}</p>}
+            {description && (
+              <p className="mt-3 text-xl text-white">{description}</p>
+            )}
             {textButton && redirection && (
               <HashLink
                 smooth

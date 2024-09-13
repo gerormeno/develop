@@ -1,7 +1,5 @@
 import ProductCard from "./components/ProductCard";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebase-config";
 import ProductSkeleton from "./components/ProductSkeleton";
 import GenericProductImage from "@/assets/adminPanel/picture-not-available.jpg";
 import { Product } from "@/types/product.type";
@@ -9,24 +7,23 @@ import Filters from "./components/Filters";
 import { useProductSelection } from "@/hooks/useProductSelection";
 import { sortProducts } from "./utils/sortProducts";
 import Aos from "aos";
+import { getProducts } from "@/services/productService";
 
 const Catalog = () => {
   const [products, setProducts] = useState<any[]>([]);
-  const productsCollection = collection(db, "products");
   const [isLoading, setIsLoading] = useState(true);
   const { activeFilters, activeSort, sortType } = useProductSelection();
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
 
-  const getProducts = async () => {
-    const productsSnapshot = await getDocs(productsCollection);
-    let productsList = productsSnapshot.docs.map((doc) =>
-      doc.data()
-    ) as Product[];
+  const fetchProducts = async () => {
+    const productsList = await getProducts();
     setProducts(productsList);
     if (activeFilters) {
-      productsList = orderAndFilterProducts(productsList);
+      const filteredProducts = orderAndFilterProducts(productsList);
+      setCatalogProducts(filteredProducts);
+    } else {
+      setCatalogProducts(productsList);
     }
-    setCatalogProducts(productsList);
     setIsLoading(false);
   };
 
@@ -43,7 +40,7 @@ const Catalog = () => {
   };
 
   useEffect(() => {
-    getProducts();
+    fetchProducts();
   }, []);
 
   useEffect(() => {

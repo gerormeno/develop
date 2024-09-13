@@ -37,9 +37,9 @@ const Banner = ({
             poster={SkeletonPicture}
           />
         </div>
-        <div data-aos="fade-up">
+                <div data-aos="fade-up">
           <div className="lg:px-16 relative flex h-screen w-full justify-center bg-gray-900 bg-opacity-40 px-6 sm:px-12">
-            <div className="relative mx-auto mt-40 flex max-w-3xl flex-col items-center text-center">
+            <div className="relative mx-auto flex max-w-3xl flex-col items-center justify-center text-center h-full">
               {logoSrc && (
                 <img
                   className="mx-auto mb-10 mt-10 h-16 w-auto invert filter"

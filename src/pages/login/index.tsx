@@ -39,7 +39,6 @@ const Login: FC = () => {
         resetForm();
         navigate("/admin");
       } catch (error) {
-        console.log("ERROR AL LOGUEAR USUARIO", error);
         setMessage(
           "Error al iniciar sesión. Por favor, revisá tus datos y volvé a intentar."
         );

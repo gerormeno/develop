@@ -1,7 +1,5 @@
 import { useParams } from "react-router-dom";
-import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "@/firebase-config";
 import { useAuth } from "@/security/AuthContext";
 import GenericProductImage from "@/assets/adminPanel/picture-not-available.jpg";
 import { RadioGroup } from "@headlessui/react";
@@ -10,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/cart";
 import { Product } from "@/types/product.type";
 import { toast } from "react-toastify";
+import { getProductByName } from "@/services/productService";
 
 const reviews = {
   average: 4,
@@ -20,19 +19,7 @@ const reviews = {
     { rating: 3, count: 97 },
     { rating: 2, count: 199 },
     { rating: 1, count: 147 },
-  ],
-  featured: [
-    {
-      id: 1,
-      rating: 5,
-      content: `
-        <p>This is the bag of my dreams. I took it on my last vacation and was able to fit an absurd amount of snacks for the many long and hungry flights.</p>
-      `,
-      author: "Emily Selman",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-  ],
+  ]
 };
 
 function classNames(...classes: string[]) {
@@ -48,7 +35,6 @@ type Option = {
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [producto, setProducto] = useState<Product>();
-  const productsCollection = collection(db, "products");
   const { isUserLoggedIn } = useAuth();
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
@@ -68,14 +54,18 @@ const ProductDetail = () => {
   };
 
   const notifyAddToCart = () => {
-    toast.success("Product added to cart!");
+    toast.success("Producto añadido al carrito");
   };
 
   const getProduct = async (productName: string) => {
-    const q = query(productsCollection, where("nombre", "==", productName));
-    const productsSnapshot = await getDocs(q);
-    const productsList = productsSnapshot.docs.map((doc) => doc.data());
-    productsList[0] && setProducto(productsList[0] as Product);
+    try {
+      const product = await getProductByName(productName);
+      if (product) {
+        setProducto(product);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const pictures =
@@ -94,12 +84,6 @@ const ProductDetail = () => {
     );
   };
 
-  useEffect(() => {
-    if (id) {
-      getProduct(id);
-    }
-  }, [id]);
-
   const disableButton =
     isUserLoggedIn ||
     (producto && !producto.activo) ||
@@ -107,6 +91,16 @@ const ProductDetail = () => {
       producto.opciones &&
       producto.opciones.length > 0 &&
       !selectedOption);
+
+  const embedLink = (link: string) => {
+    return link.replace("watch?v=", "embed/");
+  }
+
+  useEffect(() => {
+    if (id) {
+      getProduct(id);
+    }
+  }, [id]);
 
   return (
     <div className="bg-gray-50 pt-10">
@@ -160,8 +154,10 @@ const ProductDetail = () => {
                 <div className="flex items-center">
                   {producto && (
                     <p className="text-lg text-gray-900 sm:text-xl">
-                      $ { selectedOption ? selectedOption.precio.toLocaleString("es-ES") :
-                       producto.precio.toLocaleString("es-ES")}
+                      ${" "}
+                      {selectedOption
+                        ? selectedOption.precio.toLocaleString("es-ES")
+                        : producto.precio.toLocaleString("es-ES")}
                     </p>
                   )}
 
@@ -213,19 +209,19 @@ const ProductDetail = () => {
                         className="h-10 w-10 flex-shrink-0"
                         aria-hidden="true"
                       >
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         ></g>
                         <g id="SVGRepo_iconCarrier">
                           <path
                             d="M17 9L9.99998 16L6.99994 13"
                             stroke="#4bb453"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           ></path>
                         </g>
                       </svg>
@@ -240,19 +236,19 @@ const ProductDetail = () => {
                         className="h-10 w-10 flex-shrink-0"
                         aria-hidden="true"
                       >
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         ></g>
                         <g id="SVGRepo_iconCarrier">
                           <path
                             d="M16 8L8 16M8.00001 8L16 16"
                             stroke="#fc100d"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           ></path>
                         </g>
                       </svg>
@@ -383,7 +379,7 @@ const ProductDetail = () => {
                           href="#"
                           className="group inline-flex text-sm text-gray-500 hover:text-gray-700"
                         >
-                          <span>Que opcion deberia comprar?</span>
+                          <span>Que opción deberia comprar?</span>
                           <QuestionMarkCircleIcon
                             className="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                             aria-hidden="true"
@@ -399,7 +395,7 @@ const ProductDetail = () => {
                 producto.opciones &&
                 producto.opciones.length > 0 &&
                 selectedOption && (
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 my-4">
+                  <div className="my-4 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p className="text-sm text-gray-500">
                       Selección: {selectedOption?.nombre}
                     </p>
@@ -431,7 +427,7 @@ const ProductDetail = () => {
         </div>
 
         {/* Details section */}
-        {producto && producto.caracteristicas && (
+        {producto && producto.caracteristicas.length !== 0 && (
           <div className="mx-auto max-w-2xl px-4 py-24 sm:px-6 sm:py-32 md:max-w-7xl md:px-8">
             <section aria-labelledby="details-heading">
               <div className="flex flex-col items-center text-center">
@@ -461,22 +457,22 @@ const ProductDetail = () => {
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
                               >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                 <g
                                   id="SVGRepo_tracerCarrier"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
                                 ></g>
                                 <g id="SVGRepo_iconCarrier">
                                   <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
                                     d="M15.4933 6.93502C15.8053 7.20743 15.8374 7.68122 15.565 7.99325L7.70786 16.9933C7.56543 17.1564 7.35943 17.25 7.14287 17.25C6.9263 17.25 6.72031 17.1564 6.57788 16.9933L3.43502 13.3933C3.16261 13.0812 3.19473 12.6074 3.50677 12.335C3.8188 12.0626 4.29259 12.0947 4.565 12.4068L7.14287 15.3596L14.435 7.00677C14.7074 6.69473 15.1812 6.66261 15.4933 6.93502Z"
                                     fill="#1C274C"
                                   ></path>
                                   <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
                                     d="M20.5175 7.01946C20.8174 7.30513 20.829 7.77986 20.5433 8.07981L11.9716 17.0798C11.8201 17.2389 11.6065 17.3235 11.3872 17.3114C11.1679 17.2993 10.9649 17.1917 10.8318 17.0169L10.4035 16.4544C10.1526 16.1249 10.2163 15.6543 10.5458 15.4034C10.8289 15.1878 11.2161 15.2044 11.4787 15.4223L19.4571 7.04531C19.7428 6.74537 20.2175 6.73379 20.5175 7.01946Z"
                                     fill="#1C274C"
                                   ></path>
@@ -504,8 +500,8 @@ const ProductDetail = () => {
             <iframe
               width="800"
               height="500"
-              src={producto.linkTutorial}
-              title="Turorial armado Pripíat 200 versión KIT"
+              src={embedLink(producto.linkTutorial)}
+              title="Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen

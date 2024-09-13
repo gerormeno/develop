@@ -92,8 +92,6 @@ export default function Filters() {
     );
   };
 
-  console.log(activeFilters);
-
   return (
     <div className="py-5">
       {/* Mobile filter dialog */}

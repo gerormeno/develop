@@ -5,11 +5,11 @@ export type ProductOption = {
 };
 
 export type Product = {
+  id?: string; 
   nombre: string;
   precio: number;
   categoria: string;
   descripcion: string;
-  descripcionLarga: string;
   caracteristicas: string[];
   fotos: string[];
   opciones: ProductOption[];
